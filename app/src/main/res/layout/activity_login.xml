@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
+    <com.eventr.app.eventr.LoginSliderViewPager
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/login_slider"
+        android:background="@color/colorOverlay"
+        />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:padding="30dp"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:id="@+id/login_action_container">
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            style="Widget.AppCompat.Light.ProgressBar.Small"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+</LinearLayout>
