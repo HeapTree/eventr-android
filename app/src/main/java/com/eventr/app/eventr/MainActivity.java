@@ -1,6 +1,7 @@
 package com.eventr.app.eventr;
 
 import android.content.Intent;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -15,6 +16,7 @@ import android.view.MenuItem;
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
+    private NavigationView navView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
         actionBar.setDisplayHomeAsUpEnabled(true);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_main);
+        navView = (NavigationView) findViewById(R.id.navigation_view_main);
+        new Navigation(getApplicationContext(), navView, mDrawerLayout);
     }
 
     public void setTabs() {
@@ -70,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void startGroupsActivity() {
         Intent intent = new Intent(getApplicationContext(), GroupsActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
     }
 }

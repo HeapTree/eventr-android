@@ -8,6 +8,7 @@
     <string name="groups_button">Groups</string>
     <string name="events_button">Events</string>
     <string name="groups_title">Groups</string>
+    <string name="profile_title">Profile</string>
     <string name="card_test_desc">Got bored of the same old dal roti? Join us to learn how to cook awesome food at home.</string>
     <string name="login_slider_t1">Scroll through a list of events you are going to or interested in.</string>
     <string name="login_slider_t2">Form groups for the event by inviting your facebook contacts or join an existing group.</string>

@@ -1,6 +1,5 @@
 package com.eventr.app.eventr;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -8,40 +7,31 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 
 /**
- * Created by Suraj on 15/08/16.
+ * Created by Suraj on 21/08/16.
  */
-public class GroupsActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private NavigationView navView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_groups);
+        setContentView(R.layout.activity_profile);
         setToolbar();
     }
 
     private void setToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_groups);
-        toolbar.setTitle(R.string.groups_title);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_profile);
+        toolbar.setTitle(R.string.profile_title);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
         actionBar.setDisplayHomeAsUpEnabled(true);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_groups);
-        navView = (NavigationView) findViewById(R.id.navigation_view_groups);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_profile);
+        navView = (NavigationView) findViewById(R.id.navigation_view_profile);
         new Navigation(getApplicationContext(), navView, mDrawerLayout);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.groups_toolbar, menu);
-        return true;
     }
 
     @Override
@@ -53,21 +43,10 @@ public class GroupsActivity extends AppCompatActivity {
 
         switch (id) {
             case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);
+                finish();
                 return true;
-            case R.id.events_button:
-                startEventsActivity();
-                break;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void startEventsActivity() {
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        startActivity(intent);
     }
 }
