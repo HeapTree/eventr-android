@@ -1,8 +1,10 @@
 package com.eventr.app.eventr;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -41,7 +43,17 @@ public class EventViewPagerFragment extends Fragment {
 
         View v =  inflater.inflate(R.layout.event_list_fragment, container, false);
         RecyclerView recyclerView = (RecyclerView)v.findViewById(R.id.recyclerview);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        int screenSize = getActivity().getResources().getConfiguration().screenLayout &
+                Configuration.SCREENLAYOUT_SIZE_MASK;
+
+        switch(screenSize) {
+            case Configuration.SCREENLAYOUT_SIZE_XLARGE:
+                recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+                break;
+            default:
+                recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
+        }
         recyclerView.setAdapter(new EventListRecyclerAdapter(items));
 
         return v;

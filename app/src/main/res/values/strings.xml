@@ -4,9 +4,11 @@
     <string name="drawer_header_text">Suraj Poddar</string>
     <string name="fb_button">Login With Facebook</string>
     <string name="card_test_title">Awesome Food</string>
+    <string name="card_test_title_2">Suraj\'s Group</string>
     <string name="card_test_loc">Saki Naka Mumbai</string>
     <string name="groups_button">Groups</string>
     <string name="events_button">Events</string>
+    <string name="event_detail_title">Awesome Food</string>
     <string name="groups_title">Groups</string>
     <string name="profile_title">Profile</string>
     <string name="card_test_desc">Got bored of the same old dal roti? Join us to learn how to cook awesome food at home.</string>
@@ -14,4 +16,8 @@
     <string name="login_slider_t2">Form groups for the event by inviting your facebook contacts or join an existing group.</string>
     <string name="user_preference_file_key">com.eventr.app.eventr.user_preference</string>
     <string name="access_token_key">access_token</string>
+    <string name="name">name</string>
+    <string name="pic_url">pic_url</string>
+    <string name="email">email</string>
+    <string name="fb_id">fb_id</string>
 </resources>

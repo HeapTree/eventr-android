@@ -25,6 +25,10 @@
             android:label="@string/app_name" />
         <activity android:name=".GroupsActivity"></activity>
         <activity android:name=".ProfileActivity"></activity>
+        <activity
+            android:name=".EventDetailActivity"
+            android:parentActivityName="com.eventr.app.eventr.MainActivity">
+        </activity>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET"/>

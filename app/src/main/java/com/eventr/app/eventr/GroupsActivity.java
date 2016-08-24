@@ -1,15 +1,20 @@
 package com.eventr.app.eventr;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.util.ArrayList;
 
 /**
  * Created by Suraj on 15/08/16.
@@ -23,6 +28,7 @@ public class GroupsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups);
         setToolbar();
+        setGroupsList();
     }
 
     private void setToolbar() {
@@ -69,5 +75,29 @@ public class GroupsActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
+    }
+
+    private void setGroupsList() {
+        ArrayList<String> items = new ArrayList<String>();
+        for (int i = 0; i < 10; i++) {
+            items.add("item #" + i);
+        }
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.groups_container);
+
+        int screenSize = getResources().getConfiguration().screenLayout &
+                Configuration.SCREENLAYOUT_SIZE_MASK;
+
+        switch(screenSize) {
+            case Configuration.SCREENLAYOUT_SIZE_XLARGE:
+                recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+                break;
+            case Configuration.SCREENLAYOUT_SIZE_SMALL:
+                recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
+                break;
+            default:
+                recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        }
+        recyclerView.setAdapter(new GroupsRecyclerAdapter(items));
     }
 }

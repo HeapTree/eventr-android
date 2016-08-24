@@ -33,6 +33,7 @@ public class FacebookLoginFragment extends Fragment {
     private void manageFacebookLogin(ViewGroup view) {
         final Context appContext = getActivity().getApplicationContext();
         LoginButton loginButton = (LoginButton) view.findViewById(R.id.login_button);
+        loginButton.setReadPermissions("email , rsvp_event , user_events");
         loginButton.setFragment(this);
         FacebookSdk.sdkInitialize(appContext);
         callbackManager = CallbackManager.Factory.create();
