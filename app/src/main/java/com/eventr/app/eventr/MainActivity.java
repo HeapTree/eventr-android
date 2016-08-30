@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     public void setTabs() {
         EventViewPagerFragmentAdapter adapter = new EventViewPagerFragmentAdapter(getSupportFragmentManager());
         ViewPager viewPager = (ViewPager)findViewById(R.id.viewpager);
+        viewPager.setOffscreenPageLimit(3);
         viewPager.setAdapter(adapter);
         TabLayout tabLayout = (TabLayout)findViewById(R.id.tablayout);
         tabLayout.setupWithViewPager(viewPager);

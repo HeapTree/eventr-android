@@ -22,11 +22,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <RelativeLayout
+            <com.android.volley.toolbox.NetworkImageView
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:background="@drawable/card_thumbnail">
-            </RelativeLayout>
+                android:id="@+id/event_pic">
+            </com.android.volley.toolbox.NetworkImageView>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -35,22 +35,13 @@
                 android:paddingTop="20dp"
                 android:paddingRight="15dp"
                 android:paddingLeft="15dp"
-                android:paddingBottom="5dp"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/card_test_desc"
-                android:textSize="14sp"
-                android:paddingRight="15dp"
-                android:paddingLeft="15dp"
-                android:paddingBottom="3dp"
-                android:maxLines="1"
-                android:ellipsize="end"/>
+                android:paddingBottom="5dp"
+                android:id="@+id/event_card_title"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/card_test_loc"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:paddingRight="15dp"
                 android:paddingLeft="15dp"
                 android:paddingBottom="15dp"

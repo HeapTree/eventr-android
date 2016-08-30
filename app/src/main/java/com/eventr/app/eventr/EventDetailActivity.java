@@ -6,11 +6,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 /**
  * Created by Suraj on 23/08/16.
  */
 public class EventDetailActivity extends AppCompatActivity {
+    private TextView description;
+    private TextView toggleLines;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_detail);

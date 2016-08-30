@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Eventr</string>
     <string name="facebook_app_id">337506293248111</string>
-    <string name="drawer_header_text">Suraj Poddar</string>
+    <string name="drawer_header_text">Username</string>
     <string name="fb_button">Login With Facebook</string>
     <string name="card_test_title">Awesome Food</string>
     <string name="card_test_title_2">Suraj\'s Group</string>
@@ -20,4 +20,11 @@
     <string name="pic_url">pic_url</string>
     <string name="email">email</string>
     <string name="fb_id">fb_id</string>
+    <string name="events_attended_dummy">10</string>
+    <string name="total_points_dummy">1500</string>
+    <string name="events_attended_placeholder">Events Attended</string>
+    <string name="total_points_placeholder">Points Earned</string>
+    <string name="email_placeholder">user@eventr.com</string>
+    <string name="event_description_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pretium risus dui, id malesuada massa sagittis sed. Suspendisse venenatis ipsum felis, eu molestie tellus tristique a. Sed ac tempus sapien. Nullam eleifend arcu eget mattis vestibulum. Pellentesque sed eleifend orci, quis ornare ipsum. Vivamus et turpis varius magna imperdiet porta. Sed dapibus bibendum risus. Curabitur rhoncus, erat non ultrices ultrices, nunc dui tempor dui, nec pharetra quam ante vel nisl. Etiam turpis odio, consequat consequat vehicula a, suscipit nec felis. Fusce suscipit sapien et erat gravida, nec ullamcorper nunc varius. Etiam dapibus, dolor in pulvinar consectetur, nibh risus faucibus nulla, eu consequat sapien orci eget diam.</string>
+    <string name="logout">Logout</string>
 </resources>

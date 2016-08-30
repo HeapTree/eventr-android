@@ -19,10 +19,20 @@
         android:background="#ffffff"
         android:id="@+id/login_action_container">
         <ProgressBar
+            android:id="@+id/login_progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:indeterminate="true"
             style="Widget.AppCompat.Light.ProgressBar.Small"
             android:layout_centerHorizontal="true" />
+
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/login_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"/>
     </RelativeLayout>
 </LinearLayout>

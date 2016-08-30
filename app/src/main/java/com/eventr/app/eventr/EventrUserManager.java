@@ -1,14 +1,22 @@
 package com.eventr.app.eventr;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
+import android.view.View;
 
 import com.android.volley.NetworkResponse;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.eventr.app.eventr.utils.Utils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,26 +33,36 @@ public class EventrUserManager {
     private static final String USER_DATA_URL = "http://52.26.148.176/api/v1/user-profile";
     private JSONObject userData;
 
+    private ConnectivityManager cm;
+    private NetworkInfo activeNetwork;
+
     public EventrUserManager(Context actContext) {
         context = actContext;
+
+        cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
         userPreferences = context.getSharedPreferences(context.getString(R.string.user_preference_file_key), Context.MODE_PRIVATE);
         accessToken = userPreferences.getString(context.getString(R.string.access_token_key), null);
         if (accessToken != null) {
             getUserData();
         } else {
-            ((LoginActivity) context).loadFBButton();
+            ((LoginActivity) context).showFBButton();
         }
-    };
+    }
 
     public void login(String accessToken) {
         tempAccessToken = accessToken;
+        loginCall();
+    }
+
+    public void loginCall() {
+        ((LoginActivity) context).hideFBButton();
         JSONObject requestObject = new JSONObject();
 
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    Log.d("RESP", response.toString());
                     saveAccessToken(response.getString("access_token"));
                     userData = response.getJSONObject("data");
                     setUserData();
@@ -60,6 +78,21 @@ public class EventrUserManager {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
+                if (error.networkResponse == null) {
+                    if (error.getClass().equals(TimeoutError.class)) {
+                        onLoginInternetFail();
+                    }
+
+                    if (error.getClass().equals(NoConnectionError.class)) {
+                        onLoginInternetFail();
+                    }
+                } else {
+                    NetworkResponse networkResponse = error.networkResponse;
+                    if (networkResponse.statusCode == 401) {
+                        Utils.logoutFB();
+                        ((LoginActivity) context).showFBButton();
+                    }
+                }
             }
         };
 
@@ -87,7 +120,6 @@ public class EventrUserManager {
                 try {
                     userData = response.getJSONObject("data");
                     setUserData();
-                    Log.d("RESP", response.toString());
                     ((LoginActivity) context).startMainActivity();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -100,9 +132,21 @@ public class EventrUserManager {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                NetworkResponse networkResponse = error.networkResponse;
-                if (networkResponse != null && networkResponse.statusCode == 401) {
-                    ((LoginActivity) context).loadFBButton();
+
+                if (error.networkResponse == null) {
+                    if (error.getClass().equals(TimeoutError.class)) {
+                        onUserDataInternetFail();
+                    }
+
+                    if (error.getClass().equals(NoConnectionError.class)) {
+                        onUserDataInternetFail();
+                    }
+                } else {
+                    NetworkResponse networkResponse = error.networkResponse;
+                    if (networkResponse.statusCode == 401) {
+                        Utils.logoutFB();
+                        ((LoginActivity) context).showFBButton();
+                    }
                 }
             }
         };
@@ -125,5 +169,33 @@ public class EventrUserManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void onLoginInternetFail() {
+        Utils.showAlertWindow(context, "Internet connection failed", "Retry", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface d, int id) {
+                loginCall();
+            }
+        }, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface d, int id) {
+                ((Activity) context).finish();
+            }
+        });
+    }
+
+    private void onUserDataInternetFail() {
+        Utils.showAlertWindow(context, "Internet connection failed", "Retry", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface d, int id) {
+                getUserData();
+            }
+        }, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface d, int id) {
+                ((Activity) context).finish();
+            }
+        });
     }
 }

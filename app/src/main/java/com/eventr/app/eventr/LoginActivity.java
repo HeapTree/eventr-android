@@ -2,25 +2,21 @@ package com.eventr.app.eventr;
 
 
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.os.Bundle;
-import android.os.UserManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
-import android.util.Base64;
 import android.util.Log;
-import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.facebook.AccessToken;
-import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -32,16 +28,73 @@ public class LoginActivity extends FragmentActivity {
     private static final int NUM_PAGES = 3;
     private int page = 0;
     private LoginSliderViewPager mPager;
+
     private AccessToken accessToken;
+    private CallbackManager callbackManager;
+
     private EventrUserManager userManager;
+
+    private LoginButton loginButton;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
+        loginButton = (LoginButton) findViewById(R.id.login_button);
+        progressBar = (ProgressBar) findViewById(R.id.login_progress_bar);
         slider();
-        FacebookSdk.sdkInitialize(this);
         userManager = new EventrUserManager(this);
+        manageFacebookLogin();
+    }
+
+    public void showFBButton() {
+        loginButton.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
+    }
+
+    public void hideFBButton() {
+        loginButton.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public EventrUserManager getUserManager() {
+        return userManager;
+    }
+
+    private void manageFacebookLogin() {
+        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton.setReadPermissions("email , rsvp_event , user_events");
+        callbackManager = CallbackManager.Factory.create();
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                String accessToken = loginResult.getAccessToken().getToken();
+                getUserManager().login(accessToken);
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d("FB_LOGIN:", "Cancel");
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                Log.d("FB_LOGIN:", "Error");
+            }
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void startMainActivity() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void slider() {
@@ -70,44 +123,5 @@ public class LoginActivity extends FragmentActivity {
                 }
             });
         }
-    }
-
-    public void loadFBButton() {
-        RelativeLayout container = (RelativeLayout)findViewById(R.id.login_action_container);
-        container.removeAllViews();
-
-        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
-        android.support.v4.app.FragmentTransaction fmTrans = fm.beginTransaction();
-
-        FacebookLoginFragment fragment = new FacebookLoginFragment();
-        fmTrans.add(R.id.login_action_container, fragment);
-        fmTrans.commit();
-    }
-
-    private void checkKeyHash() {
-        try {
-            PackageInfo info = getPackageManager().getPackageInfo(
-                    "com.eventr.app.eventr",
-                    PackageManager.GET_SIGNATURES);
-            for (Signature signature : info.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-
-        } catch (NoSuchAlgorithmException e) {
-
-        }
-    }
-
-    public void startMainActivity() {
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    public EventrUserManager getUserManager() {
-        return userManager;
     }
 }
