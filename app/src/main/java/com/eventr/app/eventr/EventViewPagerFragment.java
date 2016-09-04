@@ -1,10 +1,16 @@
 package com.eventr.app.eventr;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +18,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
@@ -23,6 +32,7 @@ import com.eventr.app.eventr.utils.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -31,11 +41,17 @@ import java.util.ArrayList;
  */
 public class EventViewPagerFragment extends Fragment {
     private static final String TAB_POSITION = "tab_position";
-    private static final String EVENTS_URL = "http://52.26.148.176/api/v1/events?rsvp_state=attending";
+    private static final String EVENTS_URL = "http://52.26.148.176/api/v1/events?rsvp_state=";
+    private static final String NEARBY_URL = "http://52.26.148.176/api/v1/nearby-events";
+    private CharSequence[] rsvpStates = {"attending", "attending", "maybe"};
     private EventListRecyclerAdapter listAdapter;
     private SharedPreferences userPreferences;
     private String accessToken;
+    private RecyclerView recyclerView;
+    private ProgressBar progressBar;
+    private int tabPosition;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private LocationManager locationManager;
 //    private JSONArray items = new JSONArray();
     private ArrayList<Events> items = new ArrayList<Events>();
 
@@ -54,12 +70,12 @@ public class EventViewPagerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle args = getArguments();
-        int tabPosition = args.getInt(TAB_POSITION);
+        tabPosition = args.getInt(TAB_POSITION);
         View v =  inflater.inflate(R.layout.event_list_fragment, container, false);
-        RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
+        recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
+        progressBar = (ProgressBar) v.findViewById(R.id.event_list_progress_bar);
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipeRefreshEvents);
         setSwipeRefreshListener();
-
         int screenSize = getActivity().getResources().getConfiguration().screenLayout &
                 Configuration.SCREENLAYOUT_SIZE_MASK;
 
@@ -89,7 +105,6 @@ public class EventViewPagerFragment extends Fragment {
 
     private void fetchEvents(final Boolean swipeRefresh) {
         boolean isInternetConnected = Utils.isInternetConnected(getContext());
-        Log.d("INTERNET", "is internet connected " + isInternetConnected);
         if (!isInternetConnected) {
             if (swipeRefresh) {
                 swipeRefreshLayout.setRefreshing(false);
@@ -102,11 +117,13 @@ public class EventViewPagerFragment extends Fragment {
                     if (swipeRefresh) {
                         swipeRefreshLayout.setRefreshing(false);
                     }
+                    hideProgressBar();
                     try {
+                        items.clear();
                         JSONArray events = (response.getJSONObject("data")).getJSONArray("data");
                         for (int i = 0; i < events.length(); i++) {
                             JSONObject event = (JSONObject) events.get(i);
-                            Events item = new Events(event);
+                            Events item = new Events(event, rsvpStates[tabPosition].toString());
                             items.add(item);
                         }
                         listAdapter.notifyDataSetChanged();
@@ -142,8 +159,12 @@ public class EventViewPagerFragment extends Fragment {
                 }
             };
 
-            String eventsUrl = EVENTS_URL;
-            Log.d("ACCESS_TOKEN", accessToken);
+            String eventsUrl = EVENTS_URL + rsvpStates[tabPosition];
+
+//            if (tabPosition == 0) {
+//                eventsUrl = NEARBY_URL;
+//            }
+
             JsonObjectRequest request = new CustomJsonRequest(eventsUrl, null, listener, errorListener, accessToken);
             EventrRequestQueue.getInstance().add(request);
         }
@@ -165,5 +186,10 @@ public class EventViewPagerFragment extends Fragment {
                 fetchEvents(true);
             }
         });
+    }
+
+    private void hideProgressBar() {
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
     }
 }

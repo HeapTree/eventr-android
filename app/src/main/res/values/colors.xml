@@ -7,4 +7,6 @@
     <color name="colorFacebook">#3B5998</color>
     <color name="colorOverlay">#DDE50914</color>
     <color name="textColorWhite">#FFFFFF</color>
+    <color name="dateBackground">#99000000</color>
+    <color name="colorWhite">#FFFFFFFF</color>
 </resources>

@@ -1,16 +1,23 @@
 package com.eventr.app.eventr.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.view.menu.ExpandedMenuView;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.eventr.app.eventr.LoginActivity;
@@ -18,12 +25,24 @@ import com.eventr.app.eventr.R;
 import com.facebook.CallbackManager;
 import com.facebook.login.LoginManager;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by Suraj on 29/08/16.
  */
 public class Utils {
+    private static int PERMISSION_REQUEST_CODE_LOCATION = 1;
     public static boolean isInternetConnected(Context context) {
         return isNetworkAvailable(context);
+    }
+
+    public static boolean isLocationPermitted(Context context) {
+        return ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static void askLocationPermission(Context context) {
+        ActivityCompat.requestPermissions((Activity) context , new String[] {  android.Manifest.permission.ACCESS_FINE_LOCATION  }, PERMISSION_REQUEST_CODE_LOCATION);
     }
 
     /**
@@ -52,9 +71,8 @@ public class Utils {
 
         alertDialogBuilder.setPositiveButton(actionText, onOKClickListener);
         alertDialogBuilder.setNegativeButton("cancel", onCancelClickListener);
-
+        alertDialogBuilder.setCancelable(false);
         alertDialogBuilder.setMessage(message);
-
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }
@@ -80,5 +98,35 @@ public class Utils {
 
         Intent intent = new Intent(context.getApplicationContext(), LoginActivity.class);
         context.startActivity(intent);
+    }
+
+    public static Date getDateFromString(String date) {
+        SimpleDateFormat incomingFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+        try {
+            return incomingFormat.parse(date);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static String getDateAndMonth(Date date) {
+        SimpleDateFormat outputFormat = new SimpleDateFormat("MMM\r\ndd", java.util.Locale.getDefault());
+        try {
+            return outputFormat.format(date);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static String getTimeString(Date date) {
+        SimpleDateFormat outputFormat = new SimpleDateFormat("EEEE, MMMM d", java.util.Locale.getDefault());
+        try {
+            return outputFormat.format(date);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

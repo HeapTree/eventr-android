@@ -16,10 +16,13 @@ import android.widget.TextView;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONObject;
 import org.w3c.dom.Text;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by Suraj on 21/08/16.
@@ -28,11 +31,11 @@ public class ProfileActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private NavigationView navView;
     private SharedPreferences userPreferences;
-    private String name;
-    private String email;
+    private String name, email, picUrl;
     private JSONObject userData;
     private static final String USER_DATA_URL = "http://52.26.148.176/api/v1/user-profile";
     private String accessToken;
+    private ImageLoader imageLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +43,7 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
         userPreferences = getSharedPreferences(getString(R.string.user_preference_file_key), Context.MODE_PRIVATE);
         accessToken = userPreferences.getString(getString(R.string.access_token_key), null);
+        imageLoader = EventrRequestQueue.getInstance().getImageLoader();
         setToolbar();
         setProfileData();
     }
@@ -56,6 +60,7 @@ public class ProfileActivity extends AppCompatActivity {
     private void setProfileData() {
         name = userPreferences.getString(getString(R.string.name), null);
         email = userPreferences.getString(getString(R.string.email), null);
+        picUrl = userPreferences.getString("pic_url", null);
 
         TextView nameView = (TextView) findViewById(R.id.profile_name);
         if (name != null) {
@@ -65,6 +70,23 @@ public class ProfileActivity extends AppCompatActivity {
         TextView emailView = (TextView) findViewById(R.id.profile_email);
         if (email != null) {
             emailView.setText(email);
+        }
+
+        final CircleImageView imageView = (CircleImageView) findViewById(R.id.profile_image);
+        if (picUrl != null) {
+            imageLoader.get(picUrl, new ImageLoader.ImageListener() {
+                @Override
+                public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
+                    if (response.getBitmap() != null) {
+                        imageView.setImageBitmap(response.getBitmap());
+                    }
+                }
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    error.printStackTrace();
+                }
+            });
         }
     }
 

@@ -7,6 +7,7 @@
             android:title="@string/profile_title" />
         <item
             android:id="@+id/logout_button"
+            android:icon="@drawable/ic_logout"
             android:title="@string/logout" />
     </group>
 </menu>

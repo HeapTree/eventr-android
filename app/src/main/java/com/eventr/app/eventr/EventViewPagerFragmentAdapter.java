@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * Created by Suraj on 04/08/16.
  */
 public class EventViewPagerFragmentAdapter extends FragmentPagerAdapter {
-    private final CharSequence[] rsvpTitles = {"Interested", "Going", "Maybe"};
+    private final CharSequence[] rsvpTitles = {"Nearby", "Going", "Interested"};
 
     public EventViewPagerFragmentAdapter(FragmentManager fm) {
         super(fm);

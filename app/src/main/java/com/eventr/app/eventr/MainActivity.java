@@ -1,6 +1,8 @@
 package com.eventr.app.eventr;
 
 import android.content.Intent;
+import android.content.pm.PackageItemInfo;
+import android.content.pm.PackageManager;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
@@ -10,20 +12,33 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.eventr.app.eventr.utils.LocationHelper;
+import com.eventr.app.eventr.utils.Utils;
+
 
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
     private NavigationView navView;
+    private final int PERMISSION_REQUEST_CODE_LOCATION = 1;
+    private LocationHelper locationHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setToolbar();
-        setTabs();
+        boolean isLocationPermitted = Utils.isLocationPermitted(this);
+
+        if (isLocationPermitted) {
+            getLocationAndSetTabs();
+        } else {
+            Utils.askLocationPermission(this);
+        }
     }
 
     private void setToolbar() {
@@ -79,5 +94,22 @@ public class MainActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch(requestCode) {
+            case PERMISSION_REQUEST_CODE_LOCATION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    finish();
+                } else {
+                    getLocationAndSetTabs();
+                }
+            }
+        }
+    }
+
+    private void getLocationAndSetTabs() {
+        setTabs();
     }
 }
