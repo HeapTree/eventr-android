@@ -1,4 +1,4 @@
-package com.eventr.app.eventr;
+package com.eventr.app.eventr.adapters;
 
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
+import com.eventr.app.eventr.EventDetailActivity;
+import com.eventr.app.eventr.EventrRequestQueue;
+import com.eventr.app.eventr.R;
+import com.eventr.app.eventr.models.Event;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,9 +27,9 @@ import java.util.List;
  * Created by Suraj on 04/08/16.
  */
 public class EventListRecyclerAdapter extends RecyclerView.Adapter<EventListRecyclerAdapter.ViewHolder> {
-    private List<Events> mItems;
+    private List<Event> mItems;
 
-    EventListRecyclerAdapter(List<Events> items) {
+    public EventListRecyclerAdapter(List<Event> items) {
         mItems = items;
     }
 
@@ -38,7 +42,7 @@ public class EventListRecyclerAdapter extends RecyclerView.Adapter<EventListRecy
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         try {
-            Events item = mItems.get(i);
+            Event item = mItems.get(i);
             viewHolder.titleView.setText(item.getName());
             viewHolder.imageView.setImageUrl(item.getPicUrl(), EventrRequestQueue.getInstance().getImageLoader());
             viewHolder.dateView.setText(item.getDateAndMonth());

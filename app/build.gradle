@@ -23,6 +23,8 @@ repositories {
     mavenCentral()
 }
 
+apply plugin: 'com.neenbedankt.android-apt'
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
@@ -33,4 +35,7 @@ dependencies {
     compile project(path: ':volley')
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.ms-square:expandableTextView:0.1.4'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile 'com.google.android.gms:play-services-location:9.4.0'
 }

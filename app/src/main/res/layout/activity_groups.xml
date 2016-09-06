@@ -10,7 +10,8 @@
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/coordinator_groups">
 
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
@@ -22,18 +23,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"/>
-
         </android.support.design.widget.AppBarLayout>
-        <RelativeLayout
+        <android.support.v4.widget.SwipeRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/swipe_refresh_groups"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
-            <android.support.v7.widget.RecyclerView
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/groups_container"
-                android:orientation="vertical"/>
-        </RelativeLayout>
+                android:layout_height="match_parent"
+                android:padding="8dp">
+                <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    style="Widget.AppCompat.Light.ProgressBar.Small"
+                    android:id="@+id/groups_progress_bar"
+                    android:layout_gravity="center" />
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/groups_container"
+                    android:orientation="vertical"
+                    android:visibility="gone"/>
+            </FrameLayout>
+        </android.support.v4.widget.SwipeRefreshLayout>
     </android.support.design.widget.CoordinatorLayout>
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation_view_groups"

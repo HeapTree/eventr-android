@@ -28,4 +28,11 @@
     <string name="event_description_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pretium risus dui, id malesuada massa sagittis sed. Suspendisse venenatis ipsum felis, eu molestie tellus tristique a. Sed ac tempus sapien. Nullam eleifend arcu eget mattis vestibulum. Pellentesque sed eleifend orci, quis ornare ipsum. Vivamus et turpis varius magna imperdiet porta. Sed dapibus bibendum risus. Curabitur rhoncus, erat non ultrices ultrices, nunc dui tempor dui, nec pharetra quam ante vel nisl. Etiam turpis odio, consequat consequat vehicula a, suscipit nec felis. Fusce suscipit sapien et erat gravida, nec ullamcorper nunc varius. Etiam dapibus, dolor in pulvinar consectetur, nibh risus faucibus nulla, eu consequat sapien orci eget diam.</string>
     <string name="logout">Logout</string>
     <string name="intent_event_detail_key">event_detail</string>
+    <string name="intent_group_detail_key">group_detail</string>
+    <string name="add_group_text">Create a Group</string>
+    <string name="group_name_hint">Enter group name</string>
+    <string name="my_group_label">My Group</string>
+    <string name="all_group_label">All Groups</string>
+    <string name="latitude">latitude</string>
+    <string name="longitude">longitude</string>
 </resources>

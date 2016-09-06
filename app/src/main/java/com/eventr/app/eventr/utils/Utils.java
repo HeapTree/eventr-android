@@ -14,15 +14,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.view.menu.ExpandedMenuView;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.eventr.app.eventr.LoginActivity;
 import com.eventr.app.eventr.R;
-import com.facebook.CallbackManager;
 import com.facebook.login.LoginManager;
 
 import java.text.SimpleDateFormat;
@@ -71,6 +68,20 @@ public class Utils {
 
         alertDialogBuilder.setPositiveButton(actionText, onOKClickListener);
         alertDialogBuilder.setNegativeButton("cancel", onCancelClickListener);
+        alertDialogBuilder.setCancelable(false);
+        alertDialogBuilder.setMessage(message);
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    public static void showCloseActivityWindow(final Context context, String message) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                ((Activity) context).finish();
+            }
+        });
         alertDialogBuilder.setCancelable(false);
         alertDialogBuilder.setMessage(message);
         AlertDialog alertDialog = alertDialogBuilder.create();
@@ -128,5 +139,32 @@ public class Utils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static void showNewGroupDialog(Context context, DialogInterface.OnClickListener onOKClickListener, DialogInterface.OnClickListener onCancelClickListener) {
+        LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+
+        alertDialogBuilder.setPositiveButton("create", onOKClickListener);
+        alertDialogBuilder.setNegativeButton("cancel", onCancelClickListener);
+        alertDialogBuilder.setCancelable(false);
+        alertDialogBuilder.setTitle(R.string.add_group_text);
+        alertDialogBuilder.setView(inflater.inflate(R.layout.custom_dialog_fragment, null));
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    public static boolean isLocationServiceActive(final Context context) {
+        boolean gpsEnabled = false;
+        boolean networkEnabled = false;
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        try {
+            gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (gpsEnabled | networkEnabled) return true;
+        else return false;
     }
 }

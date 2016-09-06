@@ -1,4 +1,4 @@
-package com.eventr.app.eventr;
+package com.eventr.app.eventr.models;
 
 import android.util.Log;
 
@@ -13,18 +13,18 @@ import java.util.Date;
 /**
  * Created by Suraj on 24/08/16.
  */
-public class Events implements Serializable {
+public class Event implements Serializable {
     private String name, id, description, picUrl;
     private String location;
     private Date date;
     private String rsvpStatus;
     private int attendingCount;
 
-    public Events() {
+    public Event() {
     }
 
-    public  Events(JSONObject event, String rsvpStatus) {
-        setDetails(event, rsvpStatus);
+    public  Event(JSONObject event, String rsvpStatus, boolean alt) {
+        setDetails(event, rsvpStatus, alt);
     }
 
     public String getId() {
@@ -69,16 +69,61 @@ public class Events implements Serializable {
         }
     }
 
-    public void setDetails(JSONObject event, String rsvpStatus) {
+    public void setDetails(JSONObject event, String rsvpStatus, boolean alt) {
         this.rsvpStatus = rsvpStatus;
         try {
             this.id = event.getString("id");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
             this.name = event.getString("name");
-            this.picUrl = (event.getJSONObject("cover")).getString("source");
-            this.location = event.getJSONObject("place").toString();
-            this.date = Utils.getDateFromString(event.getString("start_time"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
             this.description = event.getString("description");
-            this.attendingCount = event.getInt("attending_count");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (alt) {
+                this.picUrl = event.getString("coverPicture");
+
+            } else {
+                this.picUrl = (event.getJSONObject("cover")).getString("source");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (alt) {
+                this.location = event.getJSONObject("venue").toString();
+            } else {
+                this.location = event.getJSONObject("place").toString();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            if (alt) {
+                this.attendingCount = (event.getJSONObject("stats")).getInt("attending");
+            } else {
+                this.attendingCount = event.getInt("attending_count");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            if (alt) {
+                this.date = Utils.getDateFromString(event.getString("startTime"));
+            } else {
+                this.date = Utils.getDateFromString(event.getString("start_time"));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -108,5 +153,9 @@ public class Events implements Serializable {
                 return this.attendingCount + " people are going to this event";
             }
         }
+    }
+
+    public void setRsvpStatus(String status) {
+        this.rsvpStatus = status;
     }
 }

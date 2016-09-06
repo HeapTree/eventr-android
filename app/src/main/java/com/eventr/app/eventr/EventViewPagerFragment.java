@@ -28,6 +28,8 @@ import com.android.volley.Response;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.eventr.app.eventr.adapters.EventListRecyclerAdapter;
+import com.eventr.app.eventr.models.Event;
 import com.eventr.app.eventr.utils.Utils;
 
 import org.json.JSONArray;
@@ -42,8 +44,8 @@ import java.util.ArrayList;
 public class EventViewPagerFragment extends Fragment {
     private static final String TAB_POSITION = "tab_position";
     private static final String EVENTS_URL = "http://52.26.148.176/api/v1/events?rsvp_state=";
-    private static final String NEARBY_URL = "http://52.26.148.176/api/v1/nearby-events";
-    private CharSequence[] rsvpStates = {"attending", "attending", "maybe"};
+    private static final String NEARBY_URL = "http://52.26.148.176/api/v1/nearby-events?";
+    private CharSequence[] rsvpStates = {"nearby", "attending", "maybe"};
     private EventListRecyclerAdapter listAdapter;
     private SharedPreferences userPreferences;
     private String accessToken;
@@ -52,8 +54,10 @@ public class EventViewPagerFragment extends Fragment {
     private int tabPosition;
     private SwipeRefreshLayout swipeRefreshLayout;
     private LocationManager locationManager;
+    private Double latitude;
+    private Double longitude;
 //    private JSONArray items = new JSONArray();
-    private ArrayList<Events> items = new ArrayList<Events>();
+    private ArrayList<Event> items = new ArrayList<Event>();
 
     public EventViewPagerFragment() {
 
@@ -96,7 +100,8 @@ public class EventViewPagerFragment extends Fragment {
 
         userPreferences = getContext().getSharedPreferences(getContext().getString(R.string.user_preference_file_key), Context.MODE_PRIVATE);
         accessToken = userPreferences.getString(getContext().getString(R.string.access_token_key), null);
-
+        latitude = Double.longBitsToDouble(userPreferences.getLong(getContext().getString(R.string.latitude), Double.doubleToLongBits(0.0)));
+        longitude = Double.longBitsToDouble(userPreferences.getLong(getContext().getString(R.string.longitude), Double.doubleToLongBits(0.0)));
 
         fetchEvents(false);
 
@@ -120,11 +125,20 @@ public class EventViewPagerFragment extends Fragment {
                     hideProgressBar();
                     try {
                         items.clear();
-                        JSONArray events = (response.getJSONObject("data")).getJSONArray("data");
-                        for (int i = 0; i < events.length(); i++) {
-                            JSONObject event = (JSONObject) events.get(i);
-                            Events item = new Events(event, rsvpStates[tabPosition].toString());
-                            items.add(item);
+                        if (tabPosition > 0) {
+                            JSONArray events = (response.getJSONObject("data")).getJSONArray("data");
+                            for (int i = 0; i < events.length(); i++) {
+                                JSONObject event = (JSONObject) events.get(i);
+                                Event item = new Event(event, rsvpStates[tabPosition].toString(), false);
+                                items.add(item);
+                            }
+                        } else {
+                            JSONArray events = (response.getJSONObject("data")).getJSONArray("events");
+                            for (int i = 0; i < events.length(); i++) {
+                                JSONObject event = (JSONObject) events.get(i);
+                                Event item = new Event(event, rsvpStates[tabPosition].toString(), true);
+                                items.add(item);
+                            }
                         }
                         listAdapter.notifyDataSetChanged();
                     } catch (Exception e) {
@@ -161,9 +175,9 @@ public class EventViewPagerFragment extends Fragment {
 
             String eventsUrl = EVENTS_URL + rsvpStates[tabPosition];
 
-//            if (tabPosition == 0) {
-//                eventsUrl = NEARBY_URL;
-//            }
+            if (tabPosition == 0) {
+                eventsUrl = NEARBY_URL + "lat=" + latitude + "&lng=" + longitude;
+            }
 
             JsonObjectRequest request = new CustomJsonRequest(eventsUrl, null, listener, errorListener, accessToken);
             EventrRequestQueue.getInstance().add(request);

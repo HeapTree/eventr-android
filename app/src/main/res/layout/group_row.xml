@@ -3,9 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:paddingTop="16dp"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
+    android:padding="8dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -28,12 +26,14 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/card_test_title_2"
                 android:textSize="16sp"
                 android:paddingTop="20dp"
                 android:paddingRight="15dp"
                 android:paddingLeft="15dp"
-                android:paddingBottom="5dp"/>
+                android:paddingBottom="5dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:id="@+id/group_title"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
                 android:textSize="14sp"
                 android:paddingRight="15dp"
                 android:paddingLeft="15dp"
-                android:paddingBottom="3dp"
+                android:paddingBottom="12dp"
                 android:maxLines="1"
                 android:ellipsize="end"/>
         </LinearLayout>

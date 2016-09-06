@@ -25,14 +25,17 @@
             android:label="@string/app_name" />
         <activity android:name=".GroupsActivity"></activity>
         <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".GroupDetailActivity"></activity>
         <activity
             android:name=".EventDetailActivity"
-            android:parentActivityName="com.eventr.app.eventr.MainActivity">
+            android:parentActivityName="com.eventr.app.eventr.MainActivity"
+            android:launchMode="singleTop">
         </activity>
         <activity
             android:name=".EventGroupsActivity"
             android:parentActivityName="com.eventr.app.eventr.EventDetailActivity">
         </activity>
+        <service android:name=".utils.LocationHelper" />
     </application>
 
     <uses-permission android:name="android.permission.INTERNET"/>

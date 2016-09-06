@@ -1,6 +1,8 @@
 package com.eventr.app.eventr;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -21,63 +23,67 @@ import android.widget.TextView;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
+import com.eventr.app.eventr.models.Event;
+import com.eventr.app.eventr.utils.CustomDialogFragment;
 import com.eventr.app.eventr.utils.Utils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by Suraj on 23/08/16.
  */
 public class EventDetailActivity extends AppCompatActivity {
     private static final String EVENT_DETAIL_URL = "http://52.26.148.176/api/v1/events/";
+    private static final String RSVP_STATUS_URL = "http://52.26.148.176/api/v1/rsvp-event";
 
-    private TextView description;
-    private NetworkImageView cover;
-    private TextView toggleLines;
-    private Events eventDetail;
-    private ProgressBar progressBar;
-    private NestedScrollView eventDetailContainer;
-    private TextView startTime;
-    private TextView locationView;
-    private FloatingActionButton floatingButton;
+    private Event eventDetail;
+
+    @BindView(R.id.event_detail_progress_bar) public ProgressBar progressBar;
+    @BindView(R.id.event_detail_container) public NestedScrollView eventDetailContainer;
+    @BindView(R.id.start_time) public TextView startTime;
+    @BindView(R.id.event_location) public TextView locationView;
+    @BindView(R.id.floating_action) public FloatingActionButton floatingButton;
+    @BindView(R.id.attending_count) public TextView attendingCount;
+    @BindView(R.id.event_description) public TextView description;
+    @BindView(R.id.event_detail_pic) public NetworkImageView cover;
+
     private String rsvpStatus;
-    private TextView attendingCount;
-
     private Context mContext;
+    private static final String DIALOG_TYPE = "confirm";
+    private CustomDialogFragment attendingDialogFragment = new CustomDialogFragment(DIALOG_TYPE);
 
     private SharedPreferences userPreferences;
     private String accessToken;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_detail);
+        ButterKnife.bind(this);
+
         Bundle intentExtras = getIntent().getExtras();
 
-        eventDetail = (Events)intentExtras.getSerializable(getResources().getString(R.string.intent_event_detail_key));
+        eventDetail = (Event)intentExtras.getSerializable(getResources().getString(R.string.intent_event_detail_key));
         setToolbar();
 
         userPreferences = getSharedPreferences(getString(R.string.user_preference_file_key), Context.MODE_PRIVATE);
         accessToken = userPreferences.getString(getString(R.string.access_token_key), null);
         rsvpStatus = eventDetail.getRsvpStatus();
-        progressBar = (ProgressBar) findViewById(R.id.event_detail_progress_bar);
-        eventDetailContainer = (NestedScrollView) findViewById(R.id.event_detail_container);
-        locationView = (TextView) findViewById(R.id.event_location);
-        floatingButton = (FloatingActionButton) findViewById(R.id.floating_action);
-        attendingCount = (TextView) findViewById(R.id.attending_count);
 
         mContext = this;
 
-        description = (TextView) findViewById(R.id.event_description);
-        cover = (NetworkImageView) findViewById(R.id.event_detail_pic);
-        startTime = (TextView) findViewById(R.id.start_time);
-
         getEventDetail();
+        setAttendingDialog();
         setFloatingButtonAction();
     }
 
@@ -99,9 +105,8 @@ public class EventDetailActivity extends AppCompatActivity {
                 public void onResponse(JSONObject response) {
                     hideProgressBar();
                     try {
-                        Log.d("RESPONSE", response.toString());
                         JSONObject event = response.getJSONObject("data");
-                        eventDetail.setDetails(event, rsvpStatus);
+                        eventDetail.setDetails(event, rsvpStatus, false);
                         updateEventPage();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -140,7 +145,17 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void onInternetFail() {
-
+        Utils.showAlertWindow(this, "Internet connection failed", "Retry", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface d, int id) {
+                getEventDetail();
+            }
+        }, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface d, int id) {
+                finish();
+            }
+        });
     }
 
     private void hideProgressBar() {
@@ -159,6 +174,7 @@ public class EventDetailActivity extends AppCompatActivity {
 
     private void startGroupsActivity() {
         Intent intent = new Intent(getApplicationContext(), EventGroupsActivity.class);
+        intent.putExtra(getString(R.string.intent_event_detail_key), eventDetail);
         startActivity(intent);
     }
 
@@ -185,7 +201,78 @@ public class EventDetailActivity extends AppCompatActivity {
     private View.OnClickListener floatingButtonGoingListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Log.d("CHANGE_STATUS", "attending");
+            attendingDialogFragment.show(getSupportFragmentManager(), "ATTENDING_DIALOG");
         }
     };
+
+    private void setAttendingDialog() {
+        attendingDialogFragment.setTitle("Event action");
+        attendingDialogFragment.setMessage("Do you want to attend this event?");
+        attendingDialogFragment.setPositiveButton("Yes", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeRsvpStatus();
+            }
+        });
+
+        attendingDialogFragment.setNegativeButton("No", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attendingDialogFragment.dismiss();
+            }
+        });
+    }
+
+    private void changeRsvpStatus() {
+        attendingDialogFragment.showProgressBar();
+
+        Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                attendingDialogFragment.hideProgressBar();
+                attendingDialogFragment.hideError();
+                attendingDialogFragment.dismiss();
+                rsvpStatus = "attending";
+                eventDetail.setRsvpStatus("attending");
+                setFloatingButtonAction();
+            }
+        };
+
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                attendingDialogFragment.hideProgressBar();
+                if (error.networkResponse == null) {
+                    if (error.getClass().equals(TimeoutError.class)) {
+                        onRSVPIntenetFail();
+                    }
+
+                    if (error.getClass().equals(NoConnectionError.class)) {
+                        onRSVPIntenetFail();
+                    }
+                } else {
+                    NetworkResponse networkResponse = error.networkResponse;
+                    attendingDialogFragment.dismiss();
+                    if (networkResponse.statusCode == 401) {
+                        Utils.logout(mContext);
+                    }
+                }
+            }
+        };
+
+        try {
+            JSONObject requestObject = new JSONObject();
+            requestObject.put("fb_event_id", eventDetail.getId());
+            requestObject.put("rsvp_state", "attending");
+            JsonObjectRequest request = new CustomJsonRequest(Request.Method.POST, RSVP_STATUS_URL, requestObject, listener, errorListener, accessToken);
+            EventrRequestQueue.getInstance().add(request);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void onRSVPIntenetFail() {
+        attendingDialogFragment.showError("No internet connection");
+    }
 }

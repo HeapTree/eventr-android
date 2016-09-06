@@ -1,8 +1,12 @@
-package com.eventr.app.eventr;
+package com.eventr.app.eventr.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+
+import com.eventr.app.eventr.LoginSliderFragmentOne;
+import com.eventr.app.eventr.LoginSliderFragmentThree;
+import com.eventr.app.eventr.LoginSliderFragmentTwo;
 
 /**
  * Created by Suraj on 11/08/16.
