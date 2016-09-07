@@ -38,6 +38,8 @@ public class ProfileActivity extends AppCompatActivity {
     private String accessToken;
     private ImageLoader imageLoader;
 
+    private static final String REQUEST_TAG = "profile_activity";
+
     @BindView(R.id.profile_name) public TextView nameView;
     @BindView(R.id.toolbar_profile) public Toolbar toolbar;
     @BindView(R.id.profile_email) public TextView emailView;
@@ -143,6 +145,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         String userDataUrl = USER_DATA_URL;
         JsonObjectRequest request = new CustomJsonRequest(userDataUrl, null, listener, errorListener, accessToken);
+        request.setTag(REQUEST_TAG);
         EventrRequestQueue.getInstance().add(request);
     }
 
@@ -162,5 +165,11 @@ public class ProfileActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventrRequestQueue.getInstance().cancel(REQUEST_TAG);
     }
 }

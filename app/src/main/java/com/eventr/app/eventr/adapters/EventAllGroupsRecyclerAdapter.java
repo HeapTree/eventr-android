@@ -64,7 +64,7 @@ public class EventAllGroupsRecyclerAdapter extends RecyclerView.Adapter<EventAll
         public void onClick(View v) {
             int groupIndex = getAdapterPosition();
             Intent intent = new Intent(v.getContext(), GroupDetailActivity.class);
-            intent.putExtra(v.getContext().getString(R.string.intent_event_detail_key), mItems.get(groupIndex));
+            intent.putExtra(v.getContext().getString(R.string.intent_group_detail_key), mItems.get(groupIndex));
             v.getContext().startActivity(intent);
         }
     }

@@ -25,6 +25,8 @@ import org.json.JSONObject;
  * Created by Suraj on 16/08/16.
  */
 public class EventrUserManager {
+    private static final String REQUEST_TAG = "login_activity";
+
     private String accessToken;
     private String tempAccessToken;
     private SharedPreferences userPreferences;
@@ -99,6 +101,7 @@ public class EventrUserManager {
         try {
             requestObject.put("fb_access_token", tempAccessToken);
             JsonObjectRequest request = new CustomJsonRequest(Request.Method.POST, LOGIN_URL, requestObject, listener, errorListener, accessToken);
+            request.setTag(REQUEST_TAG);
             EventrRequestQueue.getInstance().add(request);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -153,6 +156,7 @@ public class EventrUserManager {
 
         String userDataUrl = USER_DATA_URL;
         JsonObjectRequest request = new CustomJsonRequest(userDataUrl, null, listener, errorListener, accessToken);
+        request.setTag(REQUEST_TAG);
         EventrRequestQueue.getInstance().add(request);
     }
 

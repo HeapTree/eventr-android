@@ -53,6 +53,8 @@ public class EventGroupsActivity extends AppCompatActivity {
     private Event eventDetail;
     private Context mContext;
 
+    private static final String REQUEST_TAG = "event_groups_activity";
+
     @BindView(R.id.event_groups_container) public LinearLayout eventGroupsContainer;
     @BindView(R.id.event_groups_progress_bar) public ProgressBar progressBar;
     @BindView(R.id.floating_action) public FloatingActionButton floatingButton;
@@ -91,6 +93,7 @@ public class EventGroupsActivity extends AppCompatActivity {
         getEventGroups();
         createGroupClickHandler();
         myGroupClickHander();
+        floatingButtonClickHandler();
     }
 
     private void setToolbar() {
@@ -116,6 +119,8 @@ public class EventGroupsActivity extends AppCompatActivity {
             Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
+                    Log.d("EVENT_GROUPS", response.toString());
+
                     hideProgressBar();
                     eventGroups.clear();
                     JSONObject myG = null;
@@ -126,7 +131,7 @@ public class EventGroupsActivity extends AppCompatActivity {
                     }
 
                     try {
-                        myGroup = myG != null ? new EventGroup(myG) : null;
+                        myGroup = myG.length() > 0 ? new EventGroup(myG) : null;
 
                         JSONArray allG = (response.getJSONObject("data")).getJSONArray("groups");
                         for (int i = 0; i < allG.length(); i++) {
@@ -167,6 +172,7 @@ public class EventGroupsActivity extends AppCompatActivity {
             String eventsUrl = EVENT_GROUPS_URL + eventDetail.getId();
 
             JsonObjectRequest request = new CustomJsonRequest(eventsUrl, null, listener, errorListener, accessToken);
+            request.setTag(REQUEST_TAG);
             EventrRequestQueue.getInstance().add(request);
         }
     }
@@ -323,6 +329,7 @@ public class EventGroupsActivity extends AppCompatActivity {
             groupObject.put("fb_event_id", eventDetail.getId());
             requestObject.put("group", groupObject);
             JsonObjectRequest request = new CustomJsonRequest(Request.Method.POST, CREATE_GROUP_URL, requestObject, listener, errorListener, accessToken);
+            request.setTag(REQUEST_TAG);
             EventrRequestQueue.getInstance().add(request);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -346,5 +353,20 @@ public class EventGroupsActivity extends AppCompatActivity {
         Intent intent = new Intent(this, GroupDetailActivity.class);
         intent.putExtra(getString(R.string.intent_group_detail_key), myGroup);
         startActivity(intent);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventrRequestQueue.getInstance().cancel(REQUEST_TAG);
+    }
+
+    private void floatingButtonClickHandler() {
+        floatingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showNewGroupDialog();
+            }
+        });
     }
 }

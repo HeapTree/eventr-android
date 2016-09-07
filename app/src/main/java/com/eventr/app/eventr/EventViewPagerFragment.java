@@ -56,6 +56,9 @@ public class EventViewPagerFragment extends Fragment {
     private LocationManager locationManager;
     private Double latitude;
     private Double longitude;
+
+    private static final String REQUEST_TAG = "main_activity";
+
 //    private JSONArray items = new JSONArray();
     private ArrayList<Event> items = new ArrayList<Event>();
 
@@ -180,6 +183,7 @@ public class EventViewPagerFragment extends Fragment {
             }
 
             JsonObjectRequest request = new CustomJsonRequest(eventsUrl, null, listener, errorListener, accessToken);
+            request.setTag(REQUEST_TAG);
             EventrRequestQueue.getInstance().add(request);
         }
     }

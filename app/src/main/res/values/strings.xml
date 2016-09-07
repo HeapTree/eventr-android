@@ -37,4 +37,6 @@
     <string name="longitude">longitude</string>
     <string name="total_events_attended">total_events_attended</string>
     <string name="eventr_credits">eventr_credits</string>
+    <string name="group_members_label">Members</string>
+    <string name="join_group_text">Join Group</string>
 </resources>

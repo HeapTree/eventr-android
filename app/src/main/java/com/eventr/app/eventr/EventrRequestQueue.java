@@ -15,7 +15,8 @@ public class EventrRequestQueue extends Application {
     private RequestQueue mRequestQueue;
     private static EventrRequestQueue mInstance;
     private ImageLoader mImageLoader;
-    public static final String TAG = EventrRequestQueue.class.getName();
+
+    private static final String DEFAULT_TAG = "request_tag";
 
     @Override
     public void onCreate() {
@@ -33,12 +34,15 @@ public class EventrRequestQueue extends Application {
     }
 
     public <T> void add(Request<T> req) {
-        req.setTag(TAG);
         getRequestQueue().add(req);
     }
 
     public void cancel() {
-        mRequestQueue.cancelAll(TAG);
+        mRequestQueue.cancelAll(DEFAULT_TAG);
+    }
+
+    public void cancel(String tag) {
+        mRequestQueue.cancelAll(tag);
     }
 
     public ImageLoader getImageLoader() {

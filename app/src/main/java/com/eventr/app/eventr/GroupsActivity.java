@@ -43,6 +43,8 @@ import butterknife.ButterKnife;
  * Created by Suraj on 15/08/16.
  */
 public class GroupsActivity extends AppCompatActivity {
+    private static final String REQUEST_TAG = "groups_activity";
+
     @BindView(R.id.drawer_layout_groups) public DrawerLayout mDrawerLayout;
     @BindView(R.id.navigation_view_groups) public NavigationView navView;
     @BindView(R.id.groups_container) public RecyclerView groupsRecycler;
@@ -202,6 +204,7 @@ public class GroupsActivity extends AppCompatActivity {
             String eventsUrl = USER_GROUPS_URL;
 
             JsonObjectRequest request = new CustomJsonRequest(eventsUrl, null, listener, errorListener, accessToken);
+            request.setTag(REQUEST_TAG);
             EventrRequestQueue.getInstance().add(request);
         }
     }
@@ -250,5 +253,11 @@ public class GroupsActivity extends AppCompatActivity {
                 getUserGroups(true);
             }
         });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventrRequestQueue.getInstance().cancel(REQUEST_TAG);
     }
 }

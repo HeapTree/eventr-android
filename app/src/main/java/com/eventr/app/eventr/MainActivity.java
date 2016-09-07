@@ -44,6 +44,7 @@ import butterknife.ButterKnife;
 
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+    private static final String REQUEST_TAG = "main_activity";
 
     @BindView(R.id.drawer_layout_main) public DrawerLayout mDrawerLayout;
     @BindView(R.id.navigation_view_main) public NavigationView navView;
@@ -254,6 +255,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onStop() {
         super.onStop();
+        mProgressDialog.dismiss();
+        EventrRequestQueue.getInstance().cancel(REQUEST_TAG);
         if (mGoogleApiClient != null)
             if (mGoogleApiClient.isConnected()) {
                 mGoogleApiClient.disconnect();

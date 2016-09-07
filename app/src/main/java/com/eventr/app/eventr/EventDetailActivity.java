@@ -48,6 +48,8 @@ public class EventDetailActivity extends AppCompatActivity {
     private static final String EVENT_DETAIL_URL = "http://52.26.148.176/api/v1/events/";
     private static final String RSVP_STATUS_URL = "http://52.26.148.176/api/v1/rsvp-event";
 
+    private static final String REQUEST_TAG = "event_detail_activity";
+
     private Event eventDetail;
 
     @BindView(R.id.event_detail_progress_bar) public ProgressBar progressBar;
@@ -140,6 +142,7 @@ public class EventDetailActivity extends AppCompatActivity {
             String eventsUrl = EVENT_DETAIL_URL + eventDetail.getId();
 
             JsonObjectRequest request = new CustomJsonRequest(eventsUrl, null, listener, errorListener, accessToken);
+            request.setTag(REQUEST_TAG);
             EventrRequestQueue.getInstance().add(request);
         }
     }
@@ -266,6 +269,7 @@ public class EventDetailActivity extends AppCompatActivity {
             requestObject.put("fb_event_id", eventDetail.getId());
             requestObject.put("rsvp_state", "attending");
             JsonObjectRequest request = new CustomJsonRequest(Request.Method.POST, RSVP_STATUS_URL, requestObject, listener, errorListener, accessToken);
+            request.setTag(REQUEST_TAG);
             EventrRequestQueue.getInstance().add(request);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -274,5 +278,11 @@ public class EventDetailActivity extends AppCompatActivity {
 
     private void onRSVPIntenetFail() {
         attendingDialogFragment.showError("No internet connection");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventrRequestQueue.getInstance().cancel(REQUEST_TAG);
     }
 }

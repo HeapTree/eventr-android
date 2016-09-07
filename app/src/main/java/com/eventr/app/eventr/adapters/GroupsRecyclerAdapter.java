@@ -38,6 +38,7 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         EventGroup item = mItems.get(i);
         viewHolder.groupNameView.setText(item.getName());
+        viewHolder.groupEventNameView.setText(item.getEventName());
     }
 
     @Override
@@ -47,6 +48,7 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.group_title) public TextView groupNameView;
+        @BindView(R.id.group_event_name) public TextView groupEventNameView;
         ViewHolder(View v) {
             super(v);
             ButterKnife.bind(this, v);
@@ -58,7 +60,7 @@ public class GroupsRecyclerAdapter extends RecyclerView.Adapter<GroupsRecyclerAd
         public void onClick(View v) {
             int groupIndex = getAdapterPosition();
             Intent intent = new Intent(v.getContext(), GroupDetailActivity.class);
-            intent.putExtra(v.getContext().getString(R.string.intent_event_detail_key), mItems.get(groupIndex));
+            intent.putExtra(v.getContext().getString(R.string.intent_group_detail_key), mItems.get(groupIndex));
             v.getContext().startActivity(intent);
         }
     }

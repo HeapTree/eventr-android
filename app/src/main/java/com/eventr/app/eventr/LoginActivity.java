@@ -25,6 +25,8 @@ import java.util.TimerTask;
  * Created by Suraj on 08/08/16.
  */
 public class LoginActivity extends FragmentActivity {
+    private static final String REQUEST_TAG = "login_activity";
+
     private Timer timer, fbTimer;
     private static final int NUM_PAGES = 3;
     private int page = 0;
@@ -124,5 +126,11 @@ public class LoginActivity extends FragmentActivity {
                 }
             });
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventrRequestQueue.getInstance().cancel(REQUEST_TAG);
     }
 }
