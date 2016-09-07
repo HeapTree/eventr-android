@@ -35,4 +35,6 @@
     <string name="all_group_label">All Groups</string>
     <string name="latitude">latitude</string>
     <string name="longitude">longitude</string>
+    <string name="total_events_attended">total_events_attended</string>
+    <string name="eventr_credits">eventr_credits</string>
 </resources>

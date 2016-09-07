@@ -1,5 +1,6 @@
 package com.eventr.app.eventr;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -27,9 +28,16 @@ import com.eventr.app.eventr.utils.Utils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,11 +54,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private double mLatituteText, mLongitudeText;
     private ProgressDialog mProgressDialog;
 
+    private Activity thisActivity;
+
     private LocationRequest mLocationRequest;
 
     private SharedPreferences userPreferences;
 
     private static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    private static final int REQUEST_CHECK_SETTINGS = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         ButterKnife.bind(this);
         setToolbar();
         setProgressDialog();
+
+        thisActivity = this;
+
         userPreferences = getSharedPreferences(getString(R.string.user_preference_file_key), Context.MODE_PRIVATE);
 
         boolean isLocationPermitted = Utils.isLocationPermitted(this);
@@ -152,12 +166,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        if (!Utils.isLocationServiceActive(this)) {
-            Log.d("LOCATION", "not active");
-        } else {
-            buildLocationRequest();
-            sendLocationRequest();
-        }
+        buildLocationRequest();
+        buildLocationSettingsRequest();
     }
 
     @Override
@@ -179,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     private void showLocationNotFound() {
+        mProgressDialog.hide();
         Utils.showCloseActivityWindow(this, "Location cannot be fetched");
     }
 
@@ -187,7 +198,35 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(10 * 1000)        // 10 seconds, in milliseconds
                 .setFastestInterval(1000); // 1 second, in milliseconds
+    }
 
+    private void buildLocationSettingsRequest() {
+        LocationSettingsRequest.Builder locationSettingBuilder = new LocationSettingsRequest.Builder().addLocationRequest(mLocationRequest);
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, locationSettingBuilder.build());
+
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        sendLocationRequest();
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        try {
+                            status.startResolutionForResult(
+                                    thisActivity,
+                                    REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException e) {
+                            showLocationNotFound();
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        showLocationNotFound();
+                        break;
+                }
+            }
+        });
     }
 
     private void sendLocationRequest() {
@@ -228,5 +267,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         mProgressDialog.setCancelable(false);
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CHECK_SETTINGS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        sendLocationRequest();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        showLocationNotFound();
+                        break;
+                    default:
+                        break;
+                }
+                break;
+        }
     }
 }

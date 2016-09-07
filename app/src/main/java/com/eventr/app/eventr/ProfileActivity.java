@@ -22,34 +22,44 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by Suraj on 21/08/16.
  */
 public class ProfileActivity extends AppCompatActivity {
-    private DrawerLayout mDrawerLayout;
-    private NavigationView navView;
     private SharedPreferences userPreferences;
     private String name, email, picUrl;
+    private int credits, eventsAttended;
     private JSONObject userData;
     private static final String USER_DATA_URL = "http://52.26.148.176/api/v1/user-profile";
     private String accessToken;
     private ImageLoader imageLoader;
 
+    @BindView(R.id.profile_name) public TextView nameView;
+    @BindView(R.id.toolbar_profile) public Toolbar toolbar;
+    @BindView(R.id.profile_email) public TextView emailView;
+    @BindView(R.id.events_attended_count) public TextView attendedView;
+    @BindView(R.id.total_points) public TextView totalPointsView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        ButterKnife.bind(this);
+
         userPreferences = getSharedPreferences(getString(R.string.user_preference_file_key), Context.MODE_PRIVATE);
         accessToken = userPreferences.getString(getString(R.string.access_token_key), null);
+
         imageLoader = EventrRequestQueue.getInstance().getImageLoader();
         setToolbar();
         setProfileData();
     }
 
     private void setToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_profile);
         toolbar.setTitle(R.string.profile_title);
         setSupportActionBar(toolbar);
 
@@ -61,16 +71,18 @@ public class ProfileActivity extends AppCompatActivity {
         name = userPreferences.getString(getString(R.string.name), null);
         email = userPreferences.getString(getString(R.string.email), null);
         picUrl = userPreferences.getString("pic_url", null);
+        credits = userPreferences.getInt(getString(R.string.eventr_credits), 0);
+        eventsAttended = userPreferences.getInt(getString(R.string.total_events_attended), 0);
 
-        TextView nameView = (TextView) findViewById(R.id.profile_name);
         if (name != null) {
             nameView.setText(name);
         }
-
-        TextView emailView = (TextView) findViewById(R.id.profile_email);
         if (email != null) {
             emailView.setText(email);
         }
+
+        attendedView.setText(eventsAttended + "");
+        totalPointsView.setText(credits + "");
 
         final CircleImageView imageView = (CircleImageView) findViewById(R.id.profile_image);
         if (picUrl != null) {
@@ -140,6 +152,8 @@ public class ProfileActivity extends AppCompatActivity {
             editor.putString(getString(R.string.name), userData.getString("name"));
             editor.putString(getString(R.string.pic_url), userData.getString("pic_url"));
             editor.putString(getString(R.string.fb_id), userData.getString("fb_id"));
+            editor.putInt(getString(R.string.eventr_credits), userData.getInt("eventr_credits"));
+            editor.putInt(getString(R.string.total_events_attended), userData.getInt("total_events_attended"));
             if (userData.getString("email") != null) {
                 editor.putString(getString(R.string.email), userData.getString("email"));
             }
