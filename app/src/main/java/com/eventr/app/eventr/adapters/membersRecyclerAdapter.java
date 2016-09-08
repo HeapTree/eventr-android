@@ -66,7 +66,7 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<MembersRecycler
 
         if (item.getRole().equals("admin") || item.getRole().equals("owner")) {
             viewHolder.memberRole.setVisibility(View.VISIBLE);
-            viewHolder.memberRole.setText(item.getRole());
+            viewHolder.memberRole.setText(Utils.capitalize(item.getRole()));
         }
 
         imageLoader = EventrRequestQueue.getInstance().getImageLoader();
@@ -165,7 +165,7 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<MembersRecycler
             if (mItems.get(index).getRole().equals(ROLE_ADMIN) || mItems.get(index).getRole().equals(ROLE_OWNER)) {
                 return;
             }
-            createAdminDialog = new CustomDialogFragment("confirm");
+            createAdminDialog = CustomDialogFragment.newInstance("confirm", false);
 
             createAdminDialog.setTitle("Make Admin");
             createAdminDialog.setMessage("Do you want to make this user admin");
@@ -191,7 +191,7 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<MembersRecycler
             if (mItems.get(index).isEventAttended()) {
                 return;
             }
-            markAttendanceDialog = new CustomDialogFragment("confirm", true);
+            markAttendanceDialog = CustomDialogFragment.newInstance("confirm", true);
 
             markAttendanceDialog.setTitle("Mark Attendance");
             markAttendanceDialog.setMessage("Did user attend this event");
@@ -217,7 +217,7 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<MembersRecycler
             if (mItems.get(index).getRole().equals(ROLE_ADMIN) || mItems.get(index).getRole().equals(ROLE_OWNER)) {
                 return;
             }
-            requestActionDialog = new CustomDialogFragment("confirm", true);
+            requestActionDialog = CustomDialogFragment.newInstance("confirm", true);
 
             requestActionDialog.setTitle("Group Join Request");
             requestActionDialog.setMessage("Accept Join Request");

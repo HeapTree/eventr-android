@@ -82,7 +82,7 @@ public class GroupDetailActivity extends AppCompatActivity {
     private static final String ATTENDED_TEXT = "attended";
     private static final String NOT_ATTENDED_TEXT = "not_attended";
 
-    private CustomDialogFragment joinGroupDialog = new CustomDialogFragment(DIALOG_TYPE);
+    private CustomDialogFragment joinGroupDialog = CustomDialogFragment.newInstance(DIALOG_TYPE, false);
 
     @BindView(R.id.toolbar_group_detail) public Toolbar toolbar;
     @BindView(R.id.group_detail_progress_bar) public ProgressBar progressBar;

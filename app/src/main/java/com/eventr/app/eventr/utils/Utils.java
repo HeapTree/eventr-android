@@ -167,4 +167,8 @@ public class Utils {
         if (gpsEnabled | networkEnabled) return true;
         else return false;
     }
+
+    public static String capitalize(String text) {
+        return text.substring(0, 1).toUpperCase() + text.substring(1);
+    }
 }

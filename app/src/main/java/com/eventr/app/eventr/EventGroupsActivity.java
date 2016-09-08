@@ -256,7 +256,7 @@ public class EventGroupsActivity extends AppCompatActivity {
 
     private void showNewGroupDialog() {
         if (newGroupDialog == null) {
-            newGroupDialog = CustomDialogFragment.newInstance();
+            newGroupDialog = CustomDialogFragment.newInstance("edit_text", false);
         }
 
         newGroupDialog.setTitle("Create a group");

@@ -64,7 +64,7 @@ public class EventDetailActivity extends AppCompatActivity {
     private String rsvpStatus;
     private Context mContext;
     private static final String DIALOG_TYPE = "confirm";
-    private CustomDialogFragment attendingDialogFragment = new CustomDialogFragment(DIALOG_TYPE);
+    private CustomDialogFragment attendingDialogFragment = CustomDialogFragment.newInstance("edit_text", false);
 
     private SharedPreferences userPreferences;
     private String accessToken;

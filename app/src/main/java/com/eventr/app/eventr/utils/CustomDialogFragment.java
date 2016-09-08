@@ -50,23 +50,20 @@ public class CustomDialogFragment extends DialogFragment {
 
     public CustomDialogFragment() {}
 
-    public CustomDialogFragment(String dialogType) {
-        this.dialogType = dialogType;
-    }
-
-    public CustomDialogFragment(String dialogType, boolean renderCancelButton) {
-        this.dialogType = dialogType;
-        this.renderCancelButton = renderCancelButton;
-    }
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        dialogType = getArguments().getString("dialogType");
+        renderCancelButton = getArguments().getBoolean("renderCancelButton");
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         return dialog;
     }
 
-    public static CustomDialogFragment newInstance() {
+    public static CustomDialogFragment newInstance(String dialogType, boolean renderCancelButton) {
         CustomDialogFragment nf = new CustomDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("dialogType", dialogType);
+        bundle.putBoolean("renderCancelButton", renderCancelButton);
+        nf.setArguments(bundle);
         return nf;
     }
 
