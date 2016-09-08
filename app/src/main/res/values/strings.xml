@@ -46,4 +46,10 @@
     <string name="no_group_text">You have not participated in any group yet.</string>
     <string name="no_event_text">No event in this category at the moment. Try again later.</string>
     <string name="group_requests_button">group_requests_button</string>
+    <string name="close_text">Close</string>
+    <string name="requested_members_label">Group Join Requests</string>
+    <string name="attended_view">You have successfully attended this group.</string>
+    <string name="not_attended_view">You are not marked attended for this group yet.</string>
+    <string name="mark_attendance_text_view">This event is over. You can mark attendance now.</string>
+    <string name="event_over_not_joined_view">This event is over. You didn\'t join this group successfully.</string>
 </resources>

@@ -48,11 +48,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @BindView(R.id.drawer_layout_main) public DrawerLayout mDrawerLayout;
     @BindView(R.id.navigation_view_main) public NavigationView navView;
+    @BindView(R.id.toolbar_main) public Toolbar toolbar;
 
     private final int PERMISSION_REQUEST_CODE_LOCATION = 1;
     private GoogleApiClient mGoogleApiClient;
-    private Location mLastLocation;
-    private double mLatituteText, mLongitudeText;
     private ProgressDialog mProgressDialog;
 
     private Activity thisActivity;
@@ -85,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     private void setToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
@@ -243,7 +241,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
-        mLastLocation = location;
         SharedPreferences.Editor editor = userPreferences.edit();
         editor.putLong(getString(R.string.latitude), Double.doubleToRawLongBits(location.getLatitude()));
         editor.putLong(getString(R.string.longitude), Double.doubleToRawLongBits(location.getLongitude()));

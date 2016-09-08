@@ -15,9 +15,16 @@ import java.util.List;
  */
 public class EventGroup implements Serializable {
     private int id, ownerId;
-    private String fbEventId, name, uuid, eventName, userGroupStatus;
+    private String fbEventId, name, uuid, eventName, userGroupStatus, userAttendedStatus = "", userRole = MEMBER_ROLE;
     private Date createdAt;
     private boolean isEventOver, isUserOwner, isUserAdmin;
+
+    private static final String ADMIN_ROLE = "admin";
+    private static final String OWNER_ROLE = "owner";
+    private static final String MEMBER_ROLE = "member";
+
+    private static final String ATTENDED_TEXT = "attended";
+    private static final String NOT_ATTENDED_TEXT = "not_attended";
 
     public EventGroup(JSONObject group) {
         setGroupDetail(group);
@@ -49,12 +56,14 @@ public class EventGroup implements Serializable {
 
         try {
             this.isUserAdmin = group.getBoolean("is_current_user_admin");
+            this.userRole = ADMIN_ROLE;
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
             this.isUserOwner = group.getBoolean("is_current_user_owner");
+            this.userRole = OWNER_ROLE;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -138,19 +147,33 @@ public class EventGroup implements Serializable {
             return;
         }
 
-        if (mem.getRole().equals("owner")) {
+        if (mem.getRole().equals(OWNER_ROLE)) {
             this.isUserOwner = true;
             this.isUserAdmin = true;
             this.userGroupStatus = "approved";
             return;
         }
 
-        if (mem.getRole().equals("admin")) {
+        if (mem.getRole().equals(ADMIN_ROLE)) {
             this.isUserAdmin = true;
             this.userGroupStatus = "approved";
             return;
         }
 
+        if (mem.isEventAttended()) {
+            this.userAttendedStatus = ATTENDED_TEXT;
+        } else {
+            this.userAttendedStatus = NOT_ATTENDED_TEXT;
+        }
+
         this.userGroupStatus = mem.getStatus();
+    }
+
+    public String getUserRole() {
+        return this.userRole;
+    }
+
+    public String attendedEventStatus() {
+        return this.userAttendedStatus;
     }
 }

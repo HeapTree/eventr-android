@@ -97,17 +97,85 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:paddingLeft="16dp"
-                android:paddingTop="16dp"
-                android:textStyle="bold"
-                android:text="@string/group_members_label"/>
+                android:padding="16dp"
+                android:id="@+id/attended_view"
+                android:background="@color/colorAccent"
+                android:textColor="@color/textColorWhite"
+                android:visibility="gone"
+                android:text="@string/attended_view"/>
 
-            <android.support.v7.widget.RecyclerView
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/group_members_recycler"
-                android:orientation="vertical"/>
+                android:padding="16dp"
+                android:id="@+id/not_attended_view"
+                android:background="@color/colorAccent"
+                android:textColor="@color/textColorWhite"
+                android:visibility="gone"
+                android:text="@string/not_attended_view"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:id="@+id/mark_attendance_text_view"
+                android:background="@color/colorAccent"
+                android:textColor="@color/textColorWhite"
+                android:visibility="gone"
+                android:text="@string/mark_attendance_text_view"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:id="@+id/event_over_not_joined_view"
+                android:background="@color/colorAccent"
+                android:textColor="@color/textColorWhite"
+                android:visibility="gone"
+                android:text="@string/event_over_not_joined_view"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/requested_members_container"
+                android:visibility="gone">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="16dp"
+                    android:textStyle="bold"
+                    android:text="@string/requested_members_label"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/requested_members_recycler"
+                    android:orientation="vertical"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/active_members_container">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="16dp"
+                    android:textStyle="bold"
+                    android:text="@string/group_members_label"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/group_members_recycler"
+                    android:orientation="vertical"/>
+            </LinearLayout>
         </LinearLayout>
     </FrameLayout>
     <android.support.design.widget.FloatingActionButton

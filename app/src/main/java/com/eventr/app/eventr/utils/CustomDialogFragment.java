@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,7 @@ public class CustomDialogFragment extends DialogFragment {
     @BindView(R.id.progress_bar) public ProgressBar progressBar;
     @BindView(R.id.new_group_form) public LinearLayout newGroupForm;
     @BindView(R.id.error_view) public TextView errorView;
+    @BindView(R.id.cancel_button) public TextView cancelButton;
 
     private String mTitle;
     private String mMessage;
@@ -39,12 +41,22 @@ public class CustomDialogFragment extends DialogFragment {
     private View.OnClickListener mPositiveClickListener;
     private View.OnClickListener mNegativeClickListener;
     private static final String CONFIRM = "confirm";
+    private static final String CANCEL_BUTTON_TEXT = "Cancel";
     private String dialogType = "edit_text";
+
+    private boolean renderCancelButton = false;
+
+    private static final  String RETRY_TEXT = "Retry";
 
     public CustomDialogFragment() {}
 
     public CustomDialogFragment(String dialogType) {
         this.dialogType = dialogType;
+    }
+
+    public CustomDialogFragment(String dialogType, boolean renderCancelButton) {
+        this.dialogType = dialogType;
+        this.renderCancelButton = renderCancelButton;
     }
 
     @Override
@@ -144,6 +156,19 @@ public class CustomDialogFragment extends DialogFragment {
                 break;
             }
         }
+
+        if (renderCancelButton) {
+            cancelButton.setText(CANCEL_BUTTON_TEXT);
+            cancelButton.setVisibility(View.VISIBLE);
+            cancelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dismiss();
+                }
+            });
+        } else {
+            cancelButton.setVisibility(View.GONE);
+        }
     }
 
     public String getEditTextValue() {
@@ -169,10 +194,12 @@ public class CustomDialogFragment extends DialogFragment {
     public void showError(String error) {
         errorView.setText(error);
         errorView.setVisibility(View.VISIBLE);
+        positiveButtonView.setText(RETRY_TEXT);
     }
 
     public void hideError() {
         errorView.setText("");
         errorView.setVisibility(View.GONE);
+        positiveButtonView.setText(mPositiveText);
     }
 }

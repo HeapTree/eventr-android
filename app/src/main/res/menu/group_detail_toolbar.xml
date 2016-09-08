@@ -7,4 +7,10 @@
         android:icon="@drawable/ic_mail_white_24dp"
         app:showAsAction="always"
         android:visible="false"/>
+    <item
+        android:id="@+id/group_requests_close_button"
+        android:title="@string/close_text"
+        android:icon="@drawable/ic_close_white_24dp"
+        app:showAsAction="always"
+        android:visible="false"/>
 </menu>

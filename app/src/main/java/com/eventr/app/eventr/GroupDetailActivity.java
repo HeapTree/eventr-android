@@ -56,10 +56,12 @@ public class GroupDetailActivity extends AppCompatActivity {
     private String accessToken, userFbId;
     private ArrayList<GroupMember> allRequestedMembers = new ArrayList<GroupMember>();
     private ArrayList<GroupMember> groupMembers = new ArrayList<GroupMember>();
+    private ArrayList<GroupMember> requestedMembers = new ArrayList<GroupMember>();
     private MembersRecyclerAdapter recyclerAdapter;
+    private MembersRecyclerAdapter requestedMemberRecyclerAdapter;
 
     private boolean canMarkAttendance, canMakeAdmin, canAcceptJoinRequest, canJoinGroup, isJoinRequestSent, isJoinRequestRejected, showJoinView, isJoinRequestApproved;
-    private  boolean showFloatingButton, showJoinGroupView, showRequestRejected, showRequestSent, showRequestAccepted, showAdminText;
+    private  boolean showFloatingButton, showJoinGroupView, showRequestRejected, showRequestSent, showRequestAccepted, showAdminText, showMarkAttendanceText, showEventOverNotJoinedText, showAttendedText, showNotAttendedText, showAttendancePendingText;
 
     private static final String MEMBERS_URL = "http://52.26.148.176/api/v1/group-members/";
     private static final String JOIN_GROUP_URL = "http://52.26.148.176/api/v1/join-group/";
@@ -70,11 +72,22 @@ public class GroupDetailActivity extends AppCompatActivity {
     private static final String USER_STATUS_REQUESTED = "requested";
     private static final String USER_STATUS_REJECTED = "rejected";
 
-    private CustomDialogFragment joinGroupDialog = new CustomDialogFragment(DIALOG_TYPE);;
+    private static final String REQUESTED_TYPE = "requested";
+    private static final String ACTIVE_TYPE = "active";
+
+    private static final String ADMIN_ROLE = "admin";
+    private static final String OWNER_ROLE = "owner";
+    private static final String MEMBER_ROLE = "member";
+
+    private static final String ATTENDED_TEXT = "attended";
+    private static final String NOT_ATTENDED_TEXT = "not_attended";
+
+    private CustomDialogFragment joinGroupDialog = new CustomDialogFragment(DIALOG_TYPE);
 
     @BindView(R.id.toolbar_group_detail) public Toolbar toolbar;
     @BindView(R.id.group_detail_progress_bar) public ProgressBar progressBar;
     @BindView(R.id.group_members_recycler) public RecyclerView membersRecycler;
+    @BindView(R.id.requested_members_recycler) public RecyclerView requestedMembersRecycler;
     @BindView(R.id.group_members_container) public LinearLayout membersContainer;
     @BindView(R.id.floating_action) public FloatingActionButton floatingActionButton;
     @BindView(R.id.request_sent) public TextView requestSentView;
@@ -82,10 +95,18 @@ public class GroupDetailActivity extends AppCompatActivity {
     @BindView(R.id.request_accepted) public TextView requestAcceptedView;
     @BindView(R.id.admin_view) public TextView adminView;
     @BindView(R.id.join_group) public RelativeLayout joinGroupView;
+    @BindView(R.id.attended_view) public TextView attendedView;
+    @BindView(R.id.not_attended_view) public TextView notAttendedView;
+    @BindView(R.id.event_over_not_joined_view) public TextView eventOverNotJoinedView;
+    @BindView(R.id.mark_attendance_text_view) public TextView markAttendanceView;
+    @BindView(R.id.requested_members_container) public LinearLayout requestedMembersContainer;
+    @BindView(R.id.active_members_container) public LinearLayout activeMembersContainer;
 
-    private MenuItem groupRequestsButton;
+    private MenuItem groupRequestsButton, groupRequestsCloseButton;
 
     private Menu menu;
+
+    private int requestListBeforeModEleCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +124,7 @@ public class GroupDetailActivity extends AppCompatActivity {
 
         setToolbar();
         setMembersAdapter();
+        setRequestedMembersAdapter();
         setJoinGroupDialog();
         getMembers();
         setListeners();
@@ -118,7 +140,8 @@ public class GroupDetailActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.group_detail_toolbar, menu);
-        groupRequestsButton  = (MenuItem) menu.findItem(R.id.group_requests_button);
+        groupRequestsButton  = menu.findItem(R.id.group_requests_button);
+        groupRequestsCloseButton = menu.findItem(R.id.group_requests_close_button);
         return true;
     }
 
@@ -133,6 +156,11 @@ public class GroupDetailActivity extends AppCompatActivity {
             case android.R.id.home:
                 finish();
                 return true;
+            case R.id.group_requests_button:
+                showGroupRequestsView();
+                break;
+            case R.id.group_requests_close_button:
+                hideGroupRequestsView();
         }
 
         return super.onOptionsItemSelected(item);
@@ -150,6 +178,7 @@ public class GroupDetailActivity extends AppCompatActivity {
                     hideProgressBar();
                     groupMembers.clear();
                     allRequestedMembers.clear();
+                    requestedMembers.clear();
 
                     try {
                         JSONArray allG = response.getJSONArray("data");
@@ -158,6 +187,8 @@ public class GroupDetailActivity extends AppCompatActivity {
                             allRequestedMembers.add(mem);
                             if (mem.getRole().equals("owner") || mem.getRole().equals("admin") || mem.getStatus().equals("approved")) {
                                 groupMembers.add(mem);
+                            } else if (mem.getStatus().equals("requested")) {
+                                requestedMembers.add(mem);
                             }
                         }
 
@@ -226,15 +257,21 @@ public class GroupDetailActivity extends AppCompatActivity {
 
     private void onGroupMembers() {
         updateGroupActions();
-        recyclerAdapter.setUserRole(boolean isUserOwner, boolean isUserAdmin);
         recyclerAdapter.notifyDataSetChanged();
+        requestedMemberRecyclerAdapter.notifyDataSetChanged();
         renderGroupActions();
     }
 
     private void setMembersAdapter() {
         membersRecycler.setLayoutManager(new GridLayoutManager(this, 1));
-        recyclerAdapter = new MembersRecyclerAdapter(groupMembers);
+        recyclerAdapter = new MembersRecyclerAdapter(groupMembers, getListActionType(ACTIVE_TYPE), getSupportFragmentManager(), this, accessToken);
         membersRecycler.setAdapter(recyclerAdapter);
+    }
+
+    private void setRequestedMembersAdapter() {
+        requestedMembersRecycler.setLayoutManager(new GridLayoutManager(this, 1));
+        requestedMemberRecyclerAdapter = new MembersRecyclerAdapter(requestedMembers, getListActionType(REQUESTED_TYPE), getSupportFragmentManager(), this, accessToken);
+        requestedMembersRecycler.setAdapter(requestedMemberRecyclerAdapter);
     }
 
     private void updateGroupActions() {
@@ -242,6 +279,7 @@ public class GroupDetailActivity extends AppCompatActivity {
         boolean isEventOver = groupDetail.isEventOver();
         boolean isUserOwner = groupDetail.isUserOwner();
         boolean isUserAdmin = groupDetail.isUserAdmin();
+        String attendedEvent = groupDetail.attendedEventStatus();
         String joinRequestStatus = groupDetail.joinRequestStatus();
 
         canMarkAttendance = false;
@@ -252,9 +290,32 @@ public class GroupDetailActivity extends AppCompatActivity {
         isJoinRequestRejected = joinRequestStatus.equals(USER_STATUS_REJECTED);
         isJoinRequestApproved = joinRequestStatus.equals(USER_STATUS_APPROVED);
 
+        showFloatingButton = false;
+        showJoinGroupView = false;
+        showRequestSent = false;
+        showRequestRejected = false;
+        showRequestAccepted = false;
+        showAdminText = false;
+        showMarkAttendanceText = false;
+        showEventOverNotJoinedText = false;
+        showAttendedText = false;
+        showNotAttendedText = false;
+
+
         if (isEventOver) {
             if (isUserAdmin) {
                 canMarkAttendance = true;
+                showMarkAttendanceText = true;
+            }
+
+            if (!isUserAdmin && !isUserOwner) {
+                if (!isJoinRequestApproved) {
+                    showEventOverNotJoinedText = true;
+                } else if (attendedEvent.equals(ATTENDED_TEXT)) {
+                    showAttendedText = true;
+                } else if (attendedEvent.equals(NOT_ATTENDED_TEXT)) {
+                    showNotAttendedText = true;
+                }
             }
         } else {
             if (isUserAdmin) {
@@ -269,34 +330,27 @@ public class GroupDetailActivity extends AppCompatActivity {
             } else {
                 canJoinGroup = true;
             }
-        }
 
-        showFloatingButton = false;
-        showJoinGroupView = false;
-        showRequestSent = false;
-        showRequestRejected = false;
-        showRequestAccepted = false;
-        showAdminText = false;
+            if (canJoinGroup) {
+                showFloatingButton = true;
+                showJoinGroupView = true;
+            }
 
-        if (canJoinGroup) {
-            showFloatingButton = true;
-            showJoinGroupView = true;
-        }
+            if (isJoinRequestSent) {
+                showRequestSent = true;
+            }
 
-        if (isJoinRequestSent) {
-            showRequestSent = true;
-        }
+            if (isJoinRequestRejected) {
+                showRequestRejected = true;
+            }
 
-        if (isJoinRequestRejected) {
-            showRequestRejected = true;
-        }
+            if (isJoinRequestApproved) {
+                showRequestAccepted = true;
+            }
 
-        if (isJoinRequestApproved) {
-            showRequestAccepted = true;
-        }
-
-        if (isUserAdmin) {
-            showAdminText = true;
+            if (isUserAdmin) {
+                showAdminText = true;
+            }
         }
     }
 
@@ -339,6 +393,30 @@ public class GroupDetailActivity extends AppCompatActivity {
 
         if (canAcceptJoinRequest) {
             groupRequestsButton.setVisible(true);
+        }
+
+        if (showAttendedText) {
+            attendedView.setVisibility(View.VISIBLE);
+        } else {
+            attendedView.setVisibility(View.GONE);
+        }
+
+        if (showNotAttendedText) {
+            notAttendedView.setVisibility(View.VISIBLE);
+        } else {
+            notAttendedView.setVisibility(View.GONE);
+        }
+
+        if (showEventOverNotJoinedText) {
+            eventOverNotJoinedView.setVisibility(View.VISIBLE);
+        } else {
+            eventOverNotJoinedView.setVisibility(View.GONE);
+        }
+
+        if (showMarkAttendanceText) {
+            markAttendanceView.setVisibility(View.VISIBLE);
+        } else {
+            markAttendanceView.setVisibility(View.GONE);
         }
     }
 
@@ -434,5 +512,67 @@ public class GroupDetailActivity extends AppCompatActivity {
 
     private void onJoinGroupInternetFail() {
         joinGroupDialog.showError("No internet connection");
+    }
+
+    private void showGroupRequestsView() {
+        activeMembersContainer.setVisibility(View.GONE);
+        requestedMembersContainer.setVisibility(View.VISIBLE);
+        groupRequestsButton.setVisible(false);
+        groupRequestsCloseButton.setVisible(true);
+        requestListBeforeModEleCount = requestedMembers.size();
+
+    }
+
+    private void hideGroupRequestsView() {
+        activeMembersContainer.setVisibility(View.VISIBLE);
+        requestedMembersContainer.setVisibility(View.GONE);
+        groupRequestsButton.setVisible(true);
+        groupRequestsCloseButton.setVisible(false);
+        if (requestListBeforeModEleCount != requestedMembers.size()) {
+            getMembers();
+        }
+    }
+
+    private String getListActionType(String listType) {
+        String actionType = "NO_ACTION";
+        String userRole = groupDetail.getUserRole();
+        boolean isEventOver = groupDetail.isEventOver();
+        if (listType.equals(ACTIVE_TYPE)) {
+            if (userRole.equals(ADMIN_ROLE)) {
+                if (isEventOver) {
+                    actionType = "EVENT_OVER_ADMIN_ACTIONS";
+                } else {
+                    actionType = "EVENT_ACTIVE_ADMIN_ACTIVE_LIST_ACTIONS";
+                }
+            }
+
+            if (userRole.equals(OWNER_ROLE)) {
+                if (isEventOver) {
+                    actionType = "EVENT_OVER_OWNER_ACTIONS";
+                } else {
+                    actionType = "EVENT_ACTIVE_OWNER_ACTIVE_LIST_ACTIONS";
+                }
+            }
+        }
+
+        if (listType.equals(REQUESTED_TYPE)) {
+            if (userRole.equals(ADMIN_ROLE)) {
+                if (isEventOver) {
+                    actionType = "NO_ACTION";
+                } else {
+                    actionType = "EVENT_ACTIVE_ADMIN_REQUEST_LIST_ACTIONS";
+                }
+            }
+
+            if (userRole.equals(OWNER_ROLE)) {
+                if (isEventOver) {
+                    actionType = "NO_ACTION";
+                } else {
+                    actionType = "EVENT_ACTIVE_OWNER_REQUEST_LIST_ACTIONS";
+                }
+            }
+        }
+
+        return actionType;
     }
 }

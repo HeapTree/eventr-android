@@ -70,4 +70,10 @@ public class GroupMember {
     public String getStatus() {
         return this.status;
     }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public void markAttended() { this.eventAttended = true; }
 }
