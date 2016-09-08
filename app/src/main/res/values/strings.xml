@@ -39,4 +39,11 @@
     <string name="eventr_credits">eventr_credits</string>
     <string name="group_members_label">Members</string>
     <string name="join_group_text">Join Group</string>
+    <string name="request_sent">Your request to join this group has been recorded.</string>
+    <string name="request_rejected">Your request to join this group has been rejected.</string>
+    <string name="request_accepted">You are a member of the group.</string>
+    <string name="admin_view">You are an admin of this group</string>
+    <string name="no_group_text">You have not participated in any group yet.</string>
+    <string name="no_event_text">No event in this category at the moment. Try again later.</string>
+    <string name="group_requests_button">group_requests_button</string>
 </resources>

@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Suraj on 05/09/16.
@@ -23,7 +24,6 @@ public class EventGroup implements Serializable {
     }
 
     public void setGroupDetail(JSONObject group) {
-        Log.d("GROUP_DETAIL", group.toString());
         try {
             this.id = group.getInt("id");
             this.ownerId = group.getInt("owner_id");
@@ -116,5 +116,41 @@ public class EventGroup implements Serializable {
 
     public String joinRequestStatus() {
         return this.userGroupStatus;
+    }
+
+    public  void setUserGroupStatus(String status) {
+        this.userGroupStatus = status;
+    }
+
+    public void setUserGroupStatusFromMembers(List<GroupMember> members, String userFbId) {
+        GroupMember mem = null;
+        for(int i = 0; i < members.size(); i++) {
+            if (members.get(i).getFbId().equals(userFbId)) {
+                mem = members.get(i);
+                break;
+            }
+        }
+
+        if (mem == null) {
+            this.userGroupStatus = "not_requested";
+            this.isUserAdmin = false;
+            this.isUserOwner = false;
+            return;
+        }
+
+        if (mem.getRole().equals("owner")) {
+            this.isUserOwner = true;
+            this.isUserAdmin = true;
+            this.userGroupStatus = "approved";
+            return;
+        }
+
+        if (mem.getRole().equals("admin")) {
+            this.isUserAdmin = true;
+            this.userGroupStatus = "approved";
+            return;
+        }
+
+        this.userGroupStatus = mem.getStatus();
     }
 }

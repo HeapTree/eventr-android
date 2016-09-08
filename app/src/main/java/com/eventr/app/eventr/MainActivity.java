@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     private void showLocationNotFound() {
-        mProgressDialog.hide();
+        mProgressDialog.dismiss();
         Utils.showCloseActivityWindow(this, "Location cannot be fetched");
     }
 
@@ -248,14 +248,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         editor.putLong(getString(R.string.latitude), Double.doubleToRawLongBits(location.getLatitude()));
         editor.putLong(getString(R.string.longitude), Double.doubleToRawLongBits(location.getLongitude()));
         editor.apply();
-        mProgressDialog.hide();
+        mProgressDialog.dismiss();
         setTabs();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mProgressDialog.dismiss();
         EventrRequestQueue.getInstance().cancel(REQUEST_TAG);
         if (mGoogleApiClient != null)
             if (mGoogleApiClient.isConnected()) {

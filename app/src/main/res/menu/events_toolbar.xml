@@ -5,5 +5,5 @@
         android:id="@+id/groups_button"
         android:title="@string/groups_button"
         android:icon="@drawable/ic_people_white"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 </menu>

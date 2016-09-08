@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
@@ -50,6 +51,7 @@ public class GroupsActivity extends AppCompatActivity {
     @BindView(R.id.groups_container) public RecyclerView groupsRecycler;
     @BindView(R.id.groups_progress_bar) public ProgressBar progressBar;
     @BindView(R.id.swipe_refresh_groups) public SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.no_group_view) public TextView noGroupView;
 
     private Context mContext;
     private ArrayList<EventGroup> userGroups = new ArrayList<EventGroup>();
@@ -244,6 +246,11 @@ public class GroupsActivity extends AppCompatActivity {
 
     private void onUserGroups() {
         adapter.notifyDataSetChanged();
+        if (userGroups.size() > 0) {
+            noGroupView.setVisibility(View.GONE);
+        } else {
+            noGroupView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setSwipeRefreshListener() {

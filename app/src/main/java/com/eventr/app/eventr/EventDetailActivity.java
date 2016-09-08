@@ -227,6 +227,11 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void changeRsvpStatus() {
+        boolean isInternetConnected = Utils.isInternetConnected(this);
+        if (!isInternetConnected) {
+            onRSVPIntenetFail();
+            return;
+        }
         attendingDialogFragment.showProgressBar();
 
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {

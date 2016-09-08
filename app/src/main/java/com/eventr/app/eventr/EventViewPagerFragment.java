@@ -38,6 +38,9 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Suraj on 04/08/16.
  */
@@ -49,13 +52,15 @@ public class EventViewPagerFragment extends Fragment {
     private EventListRecyclerAdapter listAdapter;
     private SharedPreferences userPreferences;
     private String accessToken;
-    private RecyclerView recyclerView;
-    private ProgressBar progressBar;
     private int tabPosition;
-    private SwipeRefreshLayout swipeRefreshLayout;
     private LocationManager locationManager;
     private Double latitude;
     private Double longitude;
+
+    @BindView(R.id.recyclerView) public RecyclerView recyclerView;
+    @BindView(R.id.event_list_progress_bar) public ProgressBar progressBar;
+    @BindView(R.id.swipeRefreshEvents) public SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.no_event_view) public TextView noEventView;
 
     private static final String REQUEST_TAG = "main_activity";
 
@@ -79,9 +84,7 @@ public class EventViewPagerFragment extends Fragment {
         Bundle args = getArguments();
         tabPosition = args.getInt(TAB_POSITION);
         View v =  inflater.inflate(R.layout.event_list_fragment, container, false);
-        recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
-        progressBar = (ProgressBar) v.findViewById(R.id.event_list_progress_bar);
-        swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipeRefreshEvents);
+        ButterKnife.bind(this, v);
         setSwipeRefreshListener();
         int screenSize = getActivity().getResources().getConfiguration().screenLayout &
                 Configuration.SCREENLAYOUT_SIZE_MASK;
@@ -144,6 +147,11 @@ public class EventViewPagerFragment extends Fragment {
                             }
                         }
                         listAdapter.notifyDataSetChanged();
+                        if (items.size() > 0) {
+                            noEventView.setVisibility(View.GONE);
+                        } else {
+                            noEventView.setVisibility(View.VISIBLE);
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

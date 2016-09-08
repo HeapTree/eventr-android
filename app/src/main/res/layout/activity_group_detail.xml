@@ -57,6 +57,46 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:id="@+id/request_sent"
+                android:background="@color/colorAccent"
+                android:textColor="@color/textColorWhite"
+                android:visibility="gone"
+                android:text="@string/request_sent"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:id="@+id/request_rejected"
+                android:background="@color/colorAccent"
+                android:textColor="@color/textColorWhite"
+                android:visibility="gone"
+                android:text="@string/request_rejected"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:id="@+id/request_accepted"
+                android:background="@color/colorAccent"
+                android:textColor="@color/textColorWhite"
+                android:visibility="gone"
+                android:text="@string/request_accepted"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:id="@+id/admin_view"
+                android:background="@color/colorAccent"
+                android:textColor="@color/textColorWhite"
+                android:visibility="gone"
+                android:text="@string/admin_view"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:textSize="12sp"
                 android:paddingLeft="16dp"
                 android:paddingTop="16dp"

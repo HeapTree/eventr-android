@@ -162,6 +162,7 @@ public class EventrUserManager {
 
     private void setUserData() {
         try {
+            Log.d("USER_DATA", userData.toString());
             SharedPreferences.Editor editor = userPreferences.edit();
             editor.putString(context.getString(R.string.name), userData.getString("name"));
             editor.putString(context.getString(R.string.pic_url), userData.getString("pic_url"));

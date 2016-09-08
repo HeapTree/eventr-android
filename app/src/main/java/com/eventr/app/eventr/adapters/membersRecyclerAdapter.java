@@ -25,6 +25,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MembersRecyclerAdapter extends RecyclerView.Adapter<MembersRecyclerAdapter.ViewHolder> {
     private List<GroupMember> mItems;
     private ImageLoader imageLoader;
+    private boolean isUserOwner, isUserAdmin;
 
     public MembersRecyclerAdapter(List<GroupMember> items) {
         mItems = items;
@@ -40,6 +41,11 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<MembersRecycler
     public void onBindViewHolder(final ViewHolder viewHolder, int i) {
         GroupMember item = mItems.get(i);
         viewHolder.nameView.setText(item.getName());
+
+        if (item.getRole().equals("admin") || item.getRole().equals("owner")) {
+            viewHolder.memberRole.setVisibility(View.VISIBLE);
+            viewHolder.memberRole.setText(item.getRole());
+        }
 
         imageLoader = EventrRequestQueue.getInstance().getImageLoader();
         String picUrl = item.getPicUrl();
@@ -68,10 +74,17 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<MembersRecycler
     public class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.member_pic) CircleImageView picView;
         @BindView(R.id.member_name) TextView nameView;
+        @BindView(R.id.member_role) TextView memberRole;
 
         ViewHolder(View v) {
             super(v);
             ButterKnife.bind(this, v);
+            v.setClickable(true);
         }
+    }
+
+    public void setUserRole(boolean isUserOwner, boolean isUserAdmin) {
+        this.isUserOwner = isUserOwner;
+        this.isUserAdmin = isUserAdmin;
     }
 }

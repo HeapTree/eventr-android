@@ -11,7 +11,7 @@ import org.json.JSONObject;
  */
 public class GroupMember {
     private int id;
-    private String picUrl, name, fbId, email, role, userUuid, uuid;
+    private String picUrl, name, fbId, email, role, userUuid, uuid, status;
     private boolean eventAttended;
 
     public GroupMember(JSONObject member) {
@@ -25,6 +25,7 @@ public class GroupMember {
             this.userUuid = member.getString("user_uuid");
             this.fbId = member.getString("fb_id");
             this.uuid = member.getString("member_uuid");
+            this.status = member.getString("status");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,5 +65,9 @@ public class GroupMember {
 
     public String getUuid() {
         return this.uuid;
+    }
+
+    public String getStatus() {
+        return this.status;
     }
 }

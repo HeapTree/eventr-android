@@ -83,10 +83,12 @@ public class Event implements Serializable {
             e.printStackTrace();
         }
 
-        try {
-            this.description = event.getString("description");
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (!event.isNull("description")) {
+            try {
+                this.description = event.getString("description");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         try {
