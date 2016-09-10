@@ -64,7 +64,7 @@ public class EventDetailActivity extends AppCompatActivity {
     private String rsvpStatus;
     private Context mContext;
     private static final String DIALOG_TYPE = "confirm";
-    private CustomDialogFragment attendingDialogFragment = CustomDialogFragment.newInstance("edit_text", false);
+    private CustomDialogFragment attendingDialogFragment = CustomDialogFragment.newInstance("confirm", false);
 
     private SharedPreferences userPreferences;
     private String accessToken;
@@ -86,7 +86,6 @@ public class EventDetailActivity extends AppCompatActivity {
 
         getEventDetail();
         setAttendingDialog();
-        setFloatingButtonAction();
     }
 
     private void setToolbar() {
@@ -108,8 +107,13 @@ public class EventDetailActivity extends AppCompatActivity {
                     hideProgressBar();
                     try {
                         JSONObject event = response.getJSONObject("data");
+                        Log.d("EVENT_DETAIL", event.toString());
+                        if (event.getBoolean("user_attending_event")) {
+                            rsvpStatus = "attending";
+                        }
                         eventDetail.setDetails(event, rsvpStatus, false);
                         updateEventPage();
+                        setFloatingButtonAction();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -264,6 +268,12 @@ public class EventDetailActivity extends AppCompatActivity {
                     attendingDialogFragment.dismiss();
                     if (networkResponse.statusCode == 401) {
                         Utils.logout(mContext);
+                    }
+
+                    if (networkResponse.statusCode == 400) {
+                        rsvpStatus = "attending";
+                        eventDetail.setRsvpStatus("attending");
+                        setFloatingButtonAction();
                     }
                 }
             }

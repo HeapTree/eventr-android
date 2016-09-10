@@ -140,6 +140,7 @@ public class EventViewPagerFragment extends Fragment {
                             }
                         } else {
                             JSONArray events = (response.getJSONObject("data")).getJSONArray("events");
+                            Log.d("NEARBY_EVENTS", events.toString());
                             for (int i = 0; i < events.length(); i++) {
                                 JSONObject event = (JSONObject) events.get(i);
                                 Event item = new Event(event, rsvpStates[tabPosition].toString(), true);

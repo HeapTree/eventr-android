@@ -318,6 +318,11 @@ public class EventGroupsActivity extends AppCompatActivity {
                     if (networkResponse.statusCode == 401) {
                         Utils.logout(mContext);
                     }
+
+                    if (networkResponse.statusCode == 400) {
+                        newGroupDialog.showError("A group with this name is already created");
+                        newGroupDialog.hidePositiveButton();
+                    }
                 }
             }
         };

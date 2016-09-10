@@ -501,6 +501,10 @@ public class GroupDetailActivity extends AppCompatActivity {
                     if (networkResponse.statusCode == 401) {
                         Utils.logout(mContext);
                     }
+
+                    if (networkResponse.statusCode == 400) {
+                        getMembers();
+                    }
                 }
             }
         };

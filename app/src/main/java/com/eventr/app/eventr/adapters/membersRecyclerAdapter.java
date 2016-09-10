@@ -275,6 +275,10 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<MembersRecycler
                         if (networkResponse.statusCode == 401) {
                             Utils.logout(mContext);
                         }
+
+                        if (networkResponse.statusCode == 400) {
+                            onCreateAdmin();
+                        }
                     }
                 }
             };
@@ -330,6 +334,10 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<MembersRecycler
                         if (networkResponse.statusCode == 401) {
                             Utils.logout(mContext);
                         }
+
+                        if (networkResponse.statusCode == 400) {
+                            onMarkAttendance();
+                        }
                     }
                 }
             };
@@ -375,6 +383,10 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<MembersRecycler
                         requestActionDialog.dismiss();
                         if (networkResponse.statusCode == 401) {
                             Utils.logout(mContext);
+                        }
+
+                        if (networkResponse.statusCode == 400) {
+                            onRequestAction();
                         }
                     }
                 }

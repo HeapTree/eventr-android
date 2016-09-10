@@ -199,4 +199,8 @@ public class CustomDialogFragment extends DialogFragment {
         errorView.setVisibility(View.GONE);
         positiveButtonView.setText(mPositiveText);
     }
+
+    public void hidePositiveButton() {
+        positiveButtonView.setVisibility(View.GONE);
+    }
 }
