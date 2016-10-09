@@ -1,4 +1,14 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 24
@@ -21,6 +31,8 @@ android {
 
 repositories {
     mavenCentral()
+    maven { url "https://raw.githubusercontent.com/smilefam/SendBird-SDK-Android/master/" }
+    maven { url 'https://maven.fabric.io/public' }
 }
 
 apply plugin: 'com.neenbedankt.android-apt'
@@ -28,9 +40,9 @@ apply plugin: 'com.neenbedankt.android-apt'
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.1.1'
-    compile 'com.android.support:design:24.1.1'
-    compile 'com.android.support:cardview-v7:24.1.1'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
+    compile 'com.android.support:cardview-v7:24.2.1'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile project(path: ':volley')
     compile 'de.hdodenhof:circleimageview:2.1.0'
@@ -38,4 +50,8 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.4.0'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
     compile 'com.google.android.gms:play-services-location:9.4.0'
+    compile 'com.sendbird.sdk:sendbird-android-sdk:3.0.4'
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
+        transitive = true;
+    }
 }

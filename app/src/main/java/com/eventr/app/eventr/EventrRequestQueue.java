@@ -7,6 +7,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 import com.eventr.app.eventr.utils.LruBitmapCache;
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by Suraj on 21/08/16.
@@ -21,6 +23,7 @@ public class EventrRequestQueue extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
         mInstance = this;
         mRequestQueue = Volley.newRequestQueue(getApplicationContext());
     }

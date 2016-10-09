@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -25,14 +26,14 @@ import butterknife.ButterKnife;
  */
 public class CustomDialogFragment extends DialogFragment {
     @BindView(R.id.title_view) public TextView titleView;
-    @BindView(R.id.positive_button) public TextView positiveButtonView;
-    @BindView(R.id.negative_button) public TextView negativeButtonView;
+    @BindView(R.id.positive_button) public Button positiveButtonView;
+    @BindView(R.id.negative_button) public Button negativeButtonView;
     @BindView(R.id.edit_text) public EditText editText;
     @BindView(R.id.message_view) public TextView messageView;
     @BindView(R.id.progress_bar) public ProgressBar progressBar;
     @BindView(R.id.new_group_form) public LinearLayout newGroupForm;
     @BindView(R.id.error_view) public TextView errorView;
-    @BindView(R.id.cancel_button) public TextView cancelButton;
+    @BindView(R.id.cancel_button) public Button cancelButton;
 
     private String mTitle;
     private String mMessage;

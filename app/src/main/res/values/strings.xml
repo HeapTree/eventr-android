@@ -52,4 +52,7 @@
     <string name="not_attended_view">You are not marked attended for this group yet.</string>
     <string name="mark_attendance_text_view">This event is over. You can mark attendance now.</string>
     <string name="event_over_not_joined_view">This event is over. You didn\'t join this group successfully.</string>
+    <string name="group_chat">Group Chat</string>
+
+    <string name="user_uuid">uuid</string>
 </resources>

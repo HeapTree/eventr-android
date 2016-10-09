@@ -9,13 +9,14 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Created by Suraj on 05/09/16.
  */
 public class EventGroup implements Serializable {
     private int id, ownerId;
-    private String fbEventId, name, uuid, eventName, userGroupStatus, userAttendedStatus = "", userRole = MEMBER_ROLE;
+    private String fbEventId, name, channelName, uuid, eventName, userGroupStatus, userAttendedStatus = "", userRole = MEMBER_ROLE;
     private Date createdAt;
     private boolean isEventOver, isUserOwner, isUserAdmin;
 
@@ -38,6 +39,12 @@ public class EventGroup implements Serializable {
             this.fbEventId = group.getString("fb_event_id");
             this.uuid = group.getString("uuid");
             this.createdAt = Utils.getDateFromString(group.getString("created_at"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            this.channelName = group.getString("channel_url");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -175,5 +182,9 @@ public class EventGroup implements Serializable {
 
     public String attendedEventStatus() {
         return this.userAttendedStatus;
+    }
+
+    public String getChannelName() {
+        return this.channelName;
     }
 }

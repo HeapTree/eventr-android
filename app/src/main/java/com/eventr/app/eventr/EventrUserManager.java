@@ -169,6 +169,7 @@ public class EventrUserManager {
             editor.putString(context.getString(R.string.fb_id), userData.getString("fb_id"));
             editor.putInt(context.getString(R.string.eventr_credits), userData.getInt("eventr_credits"));
             editor.putInt(context.getString(R.string.total_events_attended), userData.getInt("total_events_attended"));
+            editor.putString(context.getString(R.string.user_uuid), userData.getString("uuid"));
             if (userData.getString("email") != null) {
                 editor.putString(context.getString(R.string.email), userData.getString("email"));
             }
