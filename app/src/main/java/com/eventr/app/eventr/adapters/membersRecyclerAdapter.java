@@ -191,7 +191,7 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<MembersRecycler
             if (mItems.get(index).isEventAttended()) {
                 return;
             }
-            markAttendanceDialog = CustomDialogFragment.newInstance("confirm", true);
+            markAttendanceDialog = CustomDialogFragment.newInstance("confirm", false);
 
             markAttendanceDialog.setTitle("Mark Attendance");
             markAttendanceDialog.setMessage("Did user attend this event");
@@ -298,6 +298,12 @@ public class MembersRecyclerAdapter extends RecyclerView.Adapter<MembersRecycler
         }
 
         private void markAttendance(boolean state) {
+            if (state == false) {
+                markAttendanceDialog.hideProgressBar();
+                markAttendanceDialog.hideError();
+                markAttendanceDialog.dismiss();
+                return;
+            }
             boolean isInternetConnected = Utils.isInternetConnected(mContext);
             if (!isInternetConnected) {
                 markAttendanceOnInternetFail();
