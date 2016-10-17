@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -29,6 +30,11 @@ public class Navigation {
     private String name;
     private CallbackManager callbackManager;
 
+    private String[] emailRecipients = new String[]{"support@eventr.biz"};
+    private String emailSubject, emailDefaultBody;
+
+    private static final String PRIVACY_POLICY_URL = "http://eventr.biz/privacy.html";
+
     public Navigation(final Context context, NavigationView mView, DrawerLayout mDrawer) {
         view = mView;
         drawer = mDrawer;
@@ -39,6 +45,9 @@ public class Navigation {
         name = userPreferences.getString(context.getString(R.string.name), null);
 
         userName.setText(name);
+
+        emailSubject = context.getString(R.string.feedback_email_sub);
+        emailDefaultBody = context.getString(R.string.feedback_email_default_body);
 
         view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -52,9 +61,31 @@ public class Navigation {
                         break;
                     case R.id.logout_button:
                         Utils.logout(view.getContext());
+                        break;
+                    case R.id.privacy_button:
+                        startPrivacyPolicy();
+                        break;
+                    case R.id.feedback_button:
+                        startFeedbackActivity();
+
                 }
                 return true;
             }
         });
+    }
+
+    private void startPrivacyPolicy() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(PRIVACY_POLICY_URL));
+        view.getContext().startActivity(intent);
+    }
+
+    private void startFeedbackActivity() {
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+        emailIntent.setData(Uri.parse("mailto:" + emailRecipients[0]));
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, emailRecipients);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, emailSubject);
+        emailIntent.putExtra(Intent.EXTRA_TEXT   , emailDefaultBody);
+        view.getContext().startActivity(emailIntent);
     }
 }

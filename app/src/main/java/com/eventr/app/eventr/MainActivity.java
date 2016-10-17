@@ -335,4 +335,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
 }

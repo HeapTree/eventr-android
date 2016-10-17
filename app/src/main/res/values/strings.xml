@@ -27,6 +27,8 @@
     <string name="email_placeholder">user@eventr.com</string>
     <string name="event_description_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pretium risus dui, id malesuada massa sagittis sed. Suspendisse venenatis ipsum felis, eu molestie tellus tristique a. Sed ac tempus sapien. Nullam eleifend arcu eget mattis vestibulum. Pellentesque sed eleifend orci, quis ornare ipsum. Vivamus et turpis varius magna imperdiet porta. Sed dapibus bibendum risus. Curabitur rhoncus, erat non ultrices ultrices, nunc dui tempor dui, nec pharetra quam ante vel nisl. Etiam turpis odio, consequat consequat vehicula a, suscipit nec felis. Fusce suscipit sapien et erat gravida, nec ullamcorper nunc varius. Etiam dapibus, dolor in pulvinar consectetur, nibh risus faucibus nulla, eu consequat sapien orci eget diam.</string>
     <string name="logout">Logout</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="feedback">Feedback</string>
     <string name="intent_event_detail_key">event_detail</string>
     <string name="intent_group_detail_key">group_detail</string>
     <string name="add_group_text">Create a Group</string>
@@ -48,11 +50,14 @@
     <string name="group_requests_button">group_requests_button</string>
     <string name="close_text">Close</string>
     <string name="requested_members_label">Group Join Requests</string>
-    <string name="attended_view">You have successfully attended this group.</string>
-    <string name="not_attended_view">You are not marked attended for this group yet.</string>
+    <string name="attended_view">You have successfully attended this event.</string>
+    <string name="not_attended_view">You are not marked attended for this event yet.</string>
     <string name="mark_attendance_text_view">This event is over. You can mark attendance now.</string>
     <string name="event_over_not_joined_view">This event is over. You didn\'t join this group successfully.</string>
     <string name="group_chat">Group Chat</string>
 
     <string name="user_uuid">uuid</string>
+
+    <string name="feedback_email_sub">Eventr feedback</string>
+    <string name="feedback_email_default_body">Hello, I would like to give some feedback.</string>
 </resources>
