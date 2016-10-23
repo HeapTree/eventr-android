@@ -61,8 +61,27 @@ public class GroupDetailActivity extends AppCompatActivity {
     private MembersRecyclerAdapter recyclerAdapter;
     private MembersRecyclerAdapter requestedMemberRecyclerAdapter;
 
-    private boolean canMarkAttendance, canMakeAdmin, canAcceptJoinRequest, canJoinGroup, isJoinRequestSent, isJoinRequestRejected, showJoinView, isJoinRequestApproved;
-    private  boolean showFloatingButton, showJoinGroupView, showRequestRejected, showRequestSent, showRequestAccepted, showAdminText, showMarkAttendanceText, showEventOverNotJoinedText, showAttendedText, showNotAttendedText, showAttendancePendingText, showChatButton;
+    private boolean canMarkAttendance,
+            canMakeAdmin,
+            canAcceptJoinRequest,
+            canJoinGroup,
+            isJoinRequestSent,
+            isJoinRequestRejected,
+            showJoinView,
+            isJoinRequestApproved,
+            showFloatingButton,
+            showInvitePeopleButton,
+            showJoinGroupView,
+            showRequestRejected,
+            showRequestSent,
+            showRequestAccepted,
+            showAdminText,
+            showMarkAttendanceText,
+            showEventOverNotJoinedText,
+            showAttendedText,
+            showNotAttendedText,
+            showAttendancePendingText,
+            showChatButton;
 
     private static final String MEMBERS_URL = "http://52.26.148.176/api/v1/group-members/";
     private static final String JOIN_GROUP_URL = "http://52.26.148.176/api/v1/join-group/";
@@ -91,6 +110,7 @@ public class GroupDetailActivity extends AppCompatActivity {
     @BindView(R.id.requested_members_recycler) public RecyclerView requestedMembersRecycler;
     @BindView(R.id.group_members_container) public LinearLayout membersContainer;
     @BindView(R.id.floating_action) public FloatingActionButton floatingActionButton;
+    @BindView(R.id.invite_people_button) public FloatingActionButton invitePeopleButton;
     @BindView(R.id.request_sent) public TextView requestSentView;
     @BindView(R.id.request_rejected) public TextView requestRejectedView;
     @BindView(R.id.request_accepted) public TextView requestAcceptedView;
@@ -296,6 +316,7 @@ public class GroupDetailActivity extends AppCompatActivity {
         isJoinRequestApproved = joinRequestStatus.equals(USER_STATUS_APPROVED);
 
         showFloatingButton = false;
+        showInvitePeopleButton = false;
         showJoinGroupView = false;
         showRequestSent = false;
         showRequestRejected = false;
@@ -309,13 +330,11 @@ public class GroupDetailActivity extends AppCompatActivity {
 
 
         if (isEventOver) {
-            if (isUserAdmin) {
+            if (isUserAdmin || isUserOwner) {
                 canMarkAttendance = true;
                 showMarkAttendanceText = true;
                 showChatButton = true;
-            }
-
-            if (!isUserAdmin && !isUserOwner) {
+            } else {
                 if (!isJoinRequestApproved) {
                     showEventOverNotJoinedText = true;
                 } else if (attendedEvent.equals(ATTENDED_TEXT)) {
@@ -329,6 +348,7 @@ public class GroupDetailActivity extends AppCompatActivity {
                 canAcceptJoinRequest = true;
                 showChatButton = true;
                 showAdminText = true;
+                showInvitePeopleButton = true;
             }
             if (isUserOwner) {
                 canMakeAdmin = true;
@@ -364,73 +384,19 @@ public class GroupDetailActivity extends AppCompatActivity {
     }
 
     private void renderGroupActions() {
-        if (showFloatingButton) {
-            floatingActionButton.setVisibility(View.VISIBLE);
-        } else {
-            floatingActionButton.setVisibility(View.GONE);
-        }
-
-        if (showJoinGroupView) {
-            joinGroupView.setVisibility(View.VISIBLE);
-        } else {
-            joinGroupView.setVisibility(View.GONE);
-        }
-
-        if (showRequestSent) {
-            requestSentView.setVisibility(View.VISIBLE);
-        } else {
-            requestSentView.setVisibility(View.GONE);
-        }
-
-        if (showRequestRejected) {
-            requestRejectedView.setVisibility(View.VISIBLE);
-        } else {
-            requestRejectedView.setVisibility(View.GONE);
-        }
-
-        if (showRequestAccepted && !showAdminText) {
-            requestAcceptedView.setVisibility(View.VISIBLE);
-        } else {
-            requestAcceptedView.setVisibility(View.GONE);
-        }
-
-        if (showAdminText) {
-            adminView.setVisibility(View.VISIBLE);
-        } else {
-            adminView.setVisibility(View.GONE);
-        }
-
-        if (canAcceptJoinRequest) {
-            groupRequestsButton.setVisible(true);
-        }
-
-        if (showAttendedText) {
-            attendedView.setVisibility(View.VISIBLE);
-        } else {
-            attendedView.setVisibility(View.GONE);
-        }
-
-        if (showNotAttendedText) {
-            notAttendedView.setVisibility(View.VISIBLE);
-        } else {
-            notAttendedView.setVisibility(View.GONE);
-        }
-
-        if (showEventOverNotJoinedText) {
-            eventOverNotJoinedView.setVisibility(View.VISIBLE);
-        } else {
-            eventOverNotJoinedView.setVisibility(View.GONE);
-        }
-
-        if (showMarkAttendanceText) {
-            markAttendanceView.setVisibility(View.VISIBLE);
-        } else {
-            markAttendanceView.setVisibility(View.GONE);
-        }
-
-        if (showChatButton) {
-            chatButton.setVisible(true);
-        }
+        floatingActionButton.setVisibility(showFloatingButton ? View.VISIBLE : View.GONE);
+        invitePeopleButton.setVisibility(showInvitePeopleButton ? View.VISIBLE : View.GONE);
+        joinGroupView.setVisibility(showJoinGroupView ? View.VISIBLE : View.GONE);
+        requestSentView.setVisibility(showRequestSent ? View.VISIBLE : View.GONE);
+        requestRejectedView.setVisibility(showRequestRejected ? View.VISIBLE : View.GONE);
+        requestAcceptedView.setVisibility((showRequestAccepted && !showAdminText) ? View.VISIBLE : View.GONE);
+        adminView.setVisibility(showAdminText ? View.VISIBLE : View.GONE);
+        groupRequestsButton.setVisible(canAcceptJoinRequest);
+        attendedView.setVisibility(showAttendedText ? View.VISIBLE : View.GONE);
+        notAttendedView.setVisibility(showNotAttendedText ? View.VISIBLE : View.GONE);
+        eventOverNotJoinedView.setVisibility(showEventOverNotJoinedText ? View.VISIBLE : View.GONE);
+        markAttendanceView.setVisibility(showMarkAttendanceText ? View.VISIBLE : View.GONE);
+        chatButton.setVisible(showChatButton);
     }
 
     @Override
@@ -441,6 +407,7 @@ public class GroupDetailActivity extends AppCompatActivity {
 
     private void setListeners() {
         setJoinGroupClickHandlers();
+        setInvitePeopleClickListener();
     }
 
     private void setJoinGroupClickHandlers() {
@@ -455,6 +422,15 @@ public class GroupDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 joinGroupDialog.show(getSupportFragmentManager(), "JOIN_GROUP_DIALOG");
+            }
+        });
+    }
+
+    private void setInvitePeopleClickListener() {
+        invitePeopleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startInviteActivity();
             }
         });
     }
@@ -475,6 +451,13 @@ public class GroupDetailActivity extends AppCompatActivity {
                 joinGroupDialog.dismiss();
             }
         });
+    }
+
+    private void startInviteActivity() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, groupDetail.getInviteText());
+        startActivity(Intent.createChooser(intent, "Invite friends via"));
     }
 
     private void joinGroup() {

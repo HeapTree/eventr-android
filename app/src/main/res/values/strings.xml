@@ -29,6 +29,7 @@
     <string name="logout">Logout</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="feedback">Feedback</string>
+    <string name="join_invited_group">Join a Group</string>
     <string name="intent_event_detail_key">event_detail</string>
     <string name="intent_group_detail_key">group_detail</string>
     <string name="add_group_text">Create a Group</string>

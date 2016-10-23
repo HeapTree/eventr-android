@@ -10,6 +10,10 @@
             android:icon="@drawable/ic_security_black_24dp"
             android:title="@string/privacy_policy" />
         <item
+            android:id="@+id/join_invited_group_button"
+            android:icon="@drawable/ic_person_add_black_24dp"
+            android:title="@string/join_invited_group" />
+        <item
             android:id="@+id/feedback_button"
             android:icon="@drawable/ic_feedback_black_24dp"
             android:title="@string/feedback" />

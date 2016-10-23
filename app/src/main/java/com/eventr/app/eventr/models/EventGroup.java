@@ -16,7 +16,15 @@ import java.util.StringTokenizer;
  */
 public class EventGroup implements Serializable {
     private int id, ownerId;
-    private String fbEventId, name, channelName, uuid, eventName, userGroupStatus, userAttendedStatus = "", userRole = MEMBER_ROLE;
+    private String fbEventId,
+            name,
+            channelName,
+            uuid,
+            eventName,
+            userGroupStatus,
+            inviteText,
+            userAttendedStatus = "",
+            userRole = MEMBER_ROLE;
     private Date createdAt;
     private boolean isEventOver, isUserOwner, isUserAdmin;
 
@@ -77,6 +85,12 @@ public class EventGroup implements Serializable {
 
         try {
             this.userGroupStatus = group.getString("current_user_group_status");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            this.inviteText = group.getString("invite_text");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -186,5 +200,9 @@ public class EventGroup implements Serializable {
 
     public String getChannelName() {
         return this.channelName;
+    }
+
+    public String getInviteText() {
+        return this.inviteText;
     }
 }

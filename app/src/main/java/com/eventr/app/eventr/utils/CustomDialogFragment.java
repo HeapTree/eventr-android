@@ -39,6 +39,7 @@ public class CustomDialogFragment extends DialogFragment {
     private String mMessage;
     private String mPositiveText;
     private String mNegativeText;
+    private String mPlaceholder;
     private View.OnClickListener mPositiveClickListener;
     private View.OnClickListener mNegativeClickListener;
     private static final String CONFIRM = "confirm";
@@ -115,6 +116,10 @@ public class CustomDialogFragment extends DialogFragment {
         mMessage = message;
     }
 
+    public void setInputPlaceholder(String placeholder) {
+        mPlaceholder = placeholder;
+    }
+
     public void setPositiveButton(String buttonText, View.OnClickListener clickListener) {
         mPositiveText = buttonText;
         mPositiveClickListener = clickListener;
@@ -142,6 +147,10 @@ public class CustomDialogFragment extends DialogFragment {
         if (mNegativeText != null && mNegativeClickListener instanceof View.OnClickListener) {
             negativeButtonView.setText(mNegativeText);
             negativeButtonView.setOnClickListener(mNegativeClickListener);
+        }
+
+        if (mPlaceholder != null) {
+            editText.setHint(mPlaceholder);
         }
 
         switch (dialogType) {
