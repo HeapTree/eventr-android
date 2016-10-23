@@ -71,14 +71,18 @@ public class EventGroup implements Serializable {
 
         try {
             this.isUserAdmin = group.getBoolean("is_current_user_admin");
-            this.userRole = ADMIN_ROLE;
+            if (this.isUserAdmin) {
+                this.userRole = ADMIN_ROLE;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
             this.isUserOwner = group.getBoolean("is_current_user_owner");
-            this.userRole = OWNER_ROLE;
+            if (this.isUserOwner) {
+                this.userRole = OWNER_ROLE;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
