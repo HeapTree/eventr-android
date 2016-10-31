@@ -57,6 +57,7 @@ public class EventDetailActivity extends AppCompatActivity {
     @BindView(R.id.start_time) public TextView startTime;
     @BindView(R.id.event_location) public TextView locationView;
     @BindView(R.id.floating_action) public FloatingActionButton floatingButton;
+    @BindView(R.id.maybe_button) public FloatingActionButton maybeButton;
     @BindView(R.id.attending_count) public TextView attendingCount;
     @BindView(R.id.event_description) public TextView description;
     @BindView(R.id.event_detail_pic) public NetworkImageView cover;
@@ -65,6 +66,7 @@ public class EventDetailActivity extends AppCompatActivity {
     private Context mContext;
     private static final String DIALOG_TYPE = "confirm";
     private CustomDialogFragment attendingDialogFragment = CustomDialogFragment.newInstance("confirm", false);
+    private CustomDialogFragment interestedDialogFragment = CustomDialogFragment.newInstance("confirm", false);
 
     private SharedPreferences userPreferences;
     private String accessToken;
@@ -86,6 +88,8 @@ public class EventDetailActivity extends AppCompatActivity {
 
         getEventDetail();
         setAttendingDialog();
+        setInterestedDialog();
+        setInterestedClickListener();
     }
 
     private void setToolbar() {
@@ -108,6 +112,9 @@ public class EventDetailActivity extends AppCompatActivity {
                     try {
                         JSONObject event = response.getJSONObject("data");
                         Log.d("EVENT_DETAIL", event.toString());
+                        if (event.getBoolean("user_interested_event")) {
+                            rsvpStatus = "maybe";
+                        }
                         if (event.getBoolean("user_attending_event")) {
                             rsvpStatus = "attending";
                         }
@@ -191,12 +198,28 @@ public class EventDetailActivity extends AppCompatActivity {
             case "attending": {
                 floatingButton.setImageResource(R.drawable.ic_people_white);
                 floatingButton.setOnClickListener(floatingButtonGroupsListener);
+                maybeButton.setVisibility(View.GONE);
+                break;
+            }
+            case "maybe": {
+                maybeButton.setVisibility(View.GONE);
+                floatingButton.setOnClickListener(floatingButtonGoingListener);
                 break;
             }
             default: {
+                maybeButton.setVisibility(View.VISIBLE);
                 floatingButton.setOnClickListener(floatingButtonGoingListener);
             }
         }
+    }
+
+    private void setInterestedClickListener() {
+        maybeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                interestedDialogFragment.show(getSupportFragmentManager(), "INTERESTED_DIALOG");
+            }
+        });
     }
 
     private View.OnClickListener floatingButtonGroupsListener = new View.OnClickListener() {
@@ -218,7 +241,7 @@ public class EventDetailActivity extends AppCompatActivity {
         attendingDialogFragment.setPositiveButton("Yes", new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                changeRsvpStatus();
+                changeRsvpStatus("attending", attendingDialogFragment);
             }
         });
 
@@ -230,22 +253,40 @@ public class EventDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void changeRsvpStatus() {
+    private void setInterestedDialog() {
+        interestedDialogFragment.setTitle("Event action");
+        interestedDialogFragment.setMessage("Are you interested in this event?");
+        interestedDialogFragment.setPositiveButton("Yes", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeRsvpStatus("maybe", interestedDialogFragment);
+            }
+        });
+
+        interestedDialogFragment.setNegativeButton("No", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                interestedDialogFragment.dismiss();
+            }
+        });
+    }
+
+    private void changeRsvpStatus(final String status, final CustomDialogFragment fragment) {
         boolean isInternetConnected = Utils.isInternetConnected(this);
         if (!isInternetConnected) {
-            onRSVPIntenetFail();
+            onRSVPIntenetFail(fragment);
             return;
         }
-        attendingDialogFragment.showProgressBar();
+        fragment.showProgressBar();
 
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                attendingDialogFragment.hideProgressBar();
-                attendingDialogFragment.hideError();
-                attendingDialogFragment.dismiss();
-                rsvpStatus = "attending";
-                eventDetail.setRsvpStatus("attending");
+                fragment.hideProgressBar();
+                fragment.hideError();
+                fragment.dismiss();
+                rsvpStatus = status;
+                eventDetail.setRsvpStatus(status);
                 setFloatingButtonAction();
             }
         };
@@ -254,25 +295,25 @@ public class EventDetailActivity extends AppCompatActivity {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                attendingDialogFragment.hideProgressBar();
+                fragment.hideProgressBar();
                 if (error.networkResponse == null) {
                     if (error.getClass().equals(TimeoutError.class)) {
-                        onRSVPIntenetFail();
+                        onRSVPIntenetFail(fragment);
                     }
 
                     if (error.getClass().equals(NoConnectionError.class)) {
-                        onRSVPIntenetFail();
+                        onRSVPIntenetFail(fragment);
                     }
                 } else {
                     NetworkResponse networkResponse = error.networkResponse;
-                    attendingDialogFragment.dismiss();
+                    fragment.dismiss();
                     if (networkResponse.statusCode == 401) {
                         Utils.logout(mContext);
                     }
 
                     if (networkResponse.statusCode == 400) {
-                        rsvpStatus = "attending";
-                        eventDetail.setRsvpStatus("attending");
+                        rsvpStatus = status;
+                        eventDetail.setRsvpStatus(status);
                         setFloatingButtonAction();
                     }
                 }
@@ -282,7 +323,7 @@ public class EventDetailActivity extends AppCompatActivity {
         try {
             JSONObject requestObject = new JSONObject();
             requestObject.put("fb_event_id", eventDetail.getId());
-            requestObject.put("rsvp_state", "attending");
+            requestObject.put("rsvp_state", status);
             JsonObjectRequest request = new CustomJsonRequest(Request.Method.POST, RSVP_STATUS_URL, requestObject, listener, errorListener, accessToken);
             request.setTag(REQUEST_TAG);
             EventrRequestQueue.getInstance().add(request);
@@ -291,8 +332,8 @@ public class EventDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void onRSVPIntenetFail() {
-        attendingDialogFragment.showError("No internet connection");
+    private void onRSVPIntenetFail(CustomDialogFragment fragment) {
+        fragment.showError("No internet connection");
     }
 
     @Override
