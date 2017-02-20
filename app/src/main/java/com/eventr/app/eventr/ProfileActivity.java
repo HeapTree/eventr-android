@@ -59,6 +59,7 @@ public class ProfileActivity extends AppCompatActivity {
         imageLoader = EventrRequestQueue.getInstance().getImageLoader();
         setToolbar();
         setProfileData();
+        getUserData();
     }
 
     private void setToolbar() {

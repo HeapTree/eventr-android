@@ -142,4 +142,15 @@
         android:id="@+id/floating_action"
         android:visibility="gone"
         />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginRight="80dp"
+        android:src="@drawable/ic_star_rate_white_18dp"
+        app:layout_anchor="@id/event_detail_appbar"
+        app:layout_anchorGravity="bottom|right|end"
+        android:id="@+id/maybe_button"
+        android:visibility="gone"
+        />
 </android.support.design.widget.CoordinatorLayout>

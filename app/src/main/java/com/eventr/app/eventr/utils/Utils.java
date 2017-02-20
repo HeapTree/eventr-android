@@ -23,6 +23,7 @@ import com.eventr.app.eventr.R;
 import com.facebook.login.LoginManager;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -30,6 +31,9 @@ import java.util.Date;
  */
 public class Utils {
     private static int PERMISSION_REQUEST_CODE_LOCATION = 1;
+    private static int MY_PERMISSION_REQUEST_STORAGE = 2;
+    public static final int MY_PERMISSIONS_REQUEST_KEY = 100;
+
     public static boolean isInternetConnected(Context context) {
         return isNetworkAvailable(context);
     }
@@ -40,6 +44,26 @@ public class Utils {
 
     public static void askLocationPermission(Context context) {
         ActivityCompat.requestPermissions((Activity) context , new String[] {  android.Manifest.permission.ACCESS_FINE_LOCATION  }, PERMISSION_REQUEST_CODE_LOCATION);
+    }
+
+    public static boolean isWriteStoragePermitted(Context context) {
+        return ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static void askWriteStoragePermission(Context context) {
+        ActivityCompat.requestPermissions((Activity) context , new String[] {  android.Manifest.permission.WRITE_EXTERNAL_STORAGE  }, MY_PERMISSION_REQUEST_STORAGE);
+    }
+
+    public static boolean isReadStoragePermitted(Context context) {
+        return ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static void askReadStoragePermission(Context context) {
+        ActivityCompat.requestPermissions((Activity) context , new String[] {  android.Manifest.permission.READ_EXTERNAL_STORAGE  }, MY_PERMISSION_REQUEST_STORAGE);
+    }
+
+    public static void askPermissions(Context context) {
+        ActivityCompat.requestPermissions((Activity) context , new String[] { android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE }, MY_PERMISSIONS_REQUEST_KEY);
     }
 
     /**
@@ -105,9 +129,12 @@ public class Utils {
         editor.remove(context.getString(R.string.fb_id));
         editor.remove(context.getString(R.string.email));
         editor.remove(context.getString(R.string.access_token_key));
+        editor.remove(context.getString(R.string.user_uuid));
         editor.commit();
 
         Intent intent = new Intent(context.getApplicationContext(), LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
     }
 

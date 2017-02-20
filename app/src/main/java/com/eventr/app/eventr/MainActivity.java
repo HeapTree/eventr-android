@@ -21,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.eventr.app.eventr.adapters.EventViewPagerFragmentAdapter;
 import com.eventr.app.eventr.utils.LocationHelper;
@@ -38,9 +39,16 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.sendbird.android.SendBird;
+import com.sendbird.android.SendBirdException;
+import com.sendbird.android.User;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.eventr.app.eventr.utils.Utils.MY_PERMISSIONS_REQUEST_KEY;
 
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -50,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @BindView(R.id.navigation_view_main) public NavigationView navView;
     @BindView(R.id.toolbar_main) public Toolbar toolbar;
 
-    private final int PERMISSION_REQUEST_CODE_LOCATION = 1;
     private GoogleApiClient mGoogleApiClient;
     private ProgressDialog mProgressDialog;
 
@@ -62,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private static final int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private static final int REQUEST_CHECK_SETTINGS = 100;
+
+    private static final String SEND_BIRD_APP_ID = "007AC74D-AEBF-451E-8D23-977F39096C4E";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,11 +84,32 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         userPreferences = getSharedPreferences(getString(R.string.user_preference_file_key), Context.MODE_PRIVATE);
 
+        permissionsCheck();
+
+        SendBird.init(SEND_BIRD_APP_ID, this);
+    }
+
+    private void permissionsCheck() {
         boolean isLocationPermitted = Utils.isLocationPermitted(this);
-        if (isLocationPermitted) {
+        boolean isWriteStoragePermitted = Utils.isWriteStoragePermitted(this);
+        boolean isReadStoragePermitted = Utils.isReadStoragePermitted(this);
+        if (isLocationPermitted && isWriteStoragePermitted && isReadStoragePermitted) {
             setupGoogleApiClient();
         } else {
-            Utils.askLocationPermission(this);
+            Utils.askPermissions(this);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch(requestCode) {
+            case MY_PERMISSIONS_REQUEST_KEY: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+                    setupGoogleApiClient();
+                } else {
+                    finish();
+                }
+            }
         }
     }
 
@@ -135,18 +165,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         startActivity(intent);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch(requestCode) {
-            case PERMISSION_REQUEST_CODE_LOCATION: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    setupGoogleApiClient();
-                } else {
-                    finish();
-                }
-            }
-        }
-    }
 
     private synchronized void setupGoogleApiClient() {
         if (GooglePlayServicesUtil.isGooglePlayServicesAvailable(this) != ConnectionResult.SUCCESS) {
@@ -200,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     private void buildLocationSettingsRequest() {
-        LocationSettingsRequest.Builder locationSettingBuilder = new LocationSettingsRequest.Builder().addLocationRequest(mLocationRequest);
+        LocationSettingsRequest.Builder locationSettingBuilder = new LocationSettingsRequest.Builder().setAlwaysShow(true).addLocationRequest(mLocationRequest);
         PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, locationSettingBuilder.build());
 
         result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
@@ -245,8 +263,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         editor.putLong(getString(R.string.latitude), Double.doubleToRawLongBits(location.getLatitude()));
         editor.putLong(getString(R.string.longitude), Double.doubleToRawLongBits(location.getLongitude()));
         editor.apply();
-        mProgressDialog.dismiss();
         setTabs();
+        connectSendBird();
     }
 
     @Override
@@ -283,6 +301,47 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         break;
                 }
                 break;
+        }
+    }
+
+    private void connectSendBird() {
+        String uuid = userPreferences.getString(getString(R.string.user_uuid), null);
+
+        Log.d("UUID", uuid);
+
+        SendBird.connect(uuid, new SendBird.ConnectHandler() {
+            @Override
+            public void onConnected(User user, SendBirdException e) {
+                mProgressDialog.dismiss();
+                if (e != null) {
+                    Toast.makeText(MainActivity.this, "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+//                String nickname = getString(R.string.name);
+//                String picUrl = getString(R.string.pic_url);
+
+//                SendBird.updateCurrentUserInfo(nickname, picUrl, new SendBird.UserInfoUpdateHandler() {
+//                    @Override
+//                    public void onUpdated(SendBirdException e) {
+//                        if (e != null) {
+//                            Toast.makeText(MainActivity.this, "" + e.getCode() + ":" + e.getMessage(), Toast.LENGTH_SHORT).show();
+//                            return;
+//                        }
+//
+//                        mProgressDialog.dismiss();
+//                    }
+//                });
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
         }
     }
 }
